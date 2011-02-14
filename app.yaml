@@ -1,0 +1,50 @@
+# boilerplate server config for google app engine
+# from darktable aka Calvin Rein
+# http://forrst.com/posts/Host_a_Static_HTML_Site_on_Google_App_Engine-BlA
+
+application: translation-telephone
+version: 5 
+runtime: python
+api_version: 1
+
+default_expiration: "30d"
+
+handlers:
+- url: /apple-touch-icon\.png
+  mime_type: image/png
+  static_files: static/apple-touch-icon.png
+  upload: static/apple-touch-icon.png
+
+- url: /favicon\.ico
+  mime_type: image/png
+  static_files: static/favicon.ico
+  upload: static/favicon.ico
+
+- url: /(robots\.txt|humans\.txt|crossdomain\.xml)
+  static_files: static/\1
+  upload: static/(robots\.txt|humans\.txt|crossdomain\.xml)
+
+- url: /img/(.*\.(gif|png|jpg))
+  static_files: static/img/\1
+  upload: static/img/(.*\.(gif|png|jpg))
+  
+- url: /swf/(.*\.swf)
+  static_files: static/swf/\1
+  upload: static/swf/(.*\.swf)
+
+- url: /css/(.*\.css)
+  mime_type: text/css
+  static_files: static/css/\1
+  upload: static/css/(.*\.css)
+
+- url: /js/(.*\.js)
+  mime_type: text/javascript
+  static_files: static/js/\1
+  upload: static/js/(.*\.js)
+
+- url: /_ah/queue/deferred
+  script: $PYTHON_LIB/google/appengine/ext/deferred/handler.py
+  login: admin
+
+- url: /.*
+  script: main.py

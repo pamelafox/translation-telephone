@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Translation Telephone: Recent {% endblock %}
+{% block content %}
+
+      <p>Here are some recent phrases that people have passed through translation.
+	Click them to see what they turned into, and when you're bored of that, <a href="/">try it yourself!</a></p>
+	
+      <div id="recent"></div>
+
+{% endblock %}
+{% block script %}
+<script>
+google.setOnLoadCallback(initRecent);
+</script>
+{% endblock %}

@@ -1,0 +1,241 @@
+/**
+ * HTML5 And CSS3 Theme version 1.2
+ * By Jayj.dk 2009-2010
+ * Download for free at http://jayj.dk/a-free-html5-and-css3-theme/
+ 
+	Released under New BSD License
+	http://www.opensource.org/licenses/bsd-license.php
+	 
+	Copyright (c) 2009-2010, Jayj.dk
+	All rights reserved.
+	
+	Redistribution and use in source and binary forms, with or without modification,
+	are permitted provided that the following conditions are met:
+	
+		* Redistributions of source code must retain the above copyright notice,
+		  this list of conditions and the following disclaimer.
+	
+		* Redistributions in binary form must reproduce the above copyright notice,
+		  this list of conditions and the following disclaimer in the documentation
+		  and/or other materials provided with the distribution.
+	
+		* Neither the name of Jayj.dk nor the names of its
+		  contributors may be used to endorse or promote products derived from this
+		  software without specific prior written permission.
+	
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+	ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+	ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+
+/* Reset.css */
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, q, small, strong, sub, sup, tt, var,
+ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+ul, ol { list-style: none;}
+img { border: none; }
+:focus { outline: 0; }
+ins { text-decoration: underline; }
+del { text-decoration: line-through; }
+table { border-collapse: collapse; border-spacing: 0; }
+h1, h2, h3, h4, h5, h6 { font-weight: normal; }
+/* End reset */
+
+body { 
+	background: #E6B647 url(/img/bg.png) repeat;
+	color: #333333;
+	font: 14px/24px Helvetica, sans-serif;
+}
+
+/* HTML5 */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section { 
+    display: block;
+}
+
+/* Typography and default stuff */
+
+a {
+	color: #C20A0A;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+a:visited {
+  color: #9e0101;
+}
+
+a:hover {
+	text-shadow: 1px 1px 2px #9C9C9C;
+	text-decoration: none;
+}
+
+p, dl, hr, h1, h2, h3, h4, h5, h6,
+ol, ul, pre, table, fieldset, blockquote, .widget {
+	margin-bottom: 20px;
+}
+
+h1 { font-size: 32px; }
+h2 { font-size: 28px; }
+h3 { font-size: 36px; text-shadow: 1px 1px 2px #ED2311; margin-bottom: 10px; }
+h4 { font-size: 23px; }
+h5 { font-size: 19px; }
+h6 { font-size: 16px; }
+
+#header h1, h2, h3 {
+	font-family: 'Maiden Orange', serif; 
+}
+
+hr { border: 0 solid #ccc; border-top-width: 1px; clear: both; height: 0; }
+ol { list-style: decimal; }
+ul { list-style: disc; }
+li { margin-left: 30px; }
+
+/* Header */
+
+#header {
+  padding-top: 40px;
+}
+
+#header h1 a {
+	color: black;
+	font-size: 66px;
+	float: left;
+	text-shadow: 1px 1px 2px #ED2311;
+}
+
+/* Content */
+#content { 
+	background: url(/img/content_bg.png) repeat; /* Fallback for browser that doesn't support rgba */
+	background: rgba(204, 204, 204, .4);
+	border: 1px solid #ED6511;
+	border-left: none; border-right: none;
+	float: left;
+	width: 940px;
+	padding: 15px 10px 5px 10px;
+}
+
+
+/* Sidebar */
+
+.widget {
+	overflow: hidden;
+	padding-top: 5px;
+}
+
+.widget li { 
+  margin-bottom: 6px;
+  line-height: 1.3em;
+}
+
+/* Footer */
+#footer { 
+	margin: 10px 0 30px 20px;
+}
+
+#footer a {
+	color: #111;
+	padding: 2px 3px;
+}
+
+#footer p { margin: 0; }
+
+/* Form */
+
+input[type=text],
+input[type=email],
+textarea {
+	background: white;
+	border: 1px solid #ED6511;
+	padding: 6px 5px;
+	
+	-webkit-box-shadow: inset -1px 1px 1px rgba(255, 255, 255, 0.65);
+	-moz-box-shadow: inset -1px 1px 1px rgba(255, 255, 255, 0.65);
+	box-shadow: inset -1px 1px 1px rgba(255, 255, 255, 0.65);
+}
+
+input[type=text]:hover, input[type=text]:focus,
+input[type=email]:hover, input[type=email]:focus,
+textarea:hover, textarea:focus {
+	text-shadow: 1px 1px 0 #eae7e7;
+}
+
+button  {
+	background: #ED9111;
+	font-size: 20px;
+	cursor: pointer;
+	vertical-align: middle;
+	border-radius: 3px;
+	border-color: #ED2311;
+}
+
+button:hover {
+}
+
+#message {
+  width: 530px;
+}
+
+.translation {
+	margin-bottom: 10px;
+}
+
+.message {
+	-webkit-ED6511-radius: 5px;
+	background:white;
+	box-shadow:2px 2px 2px #333333;
+}
+
+.language {
+	font-weight: bold;
+}
+
+#share {
+	display: none;
+	font-size: larger;
+	font-weight: bold;
+}
+
+.round {
+  border-bottom: 1px solid #ED6511;
+  line-height: 1.3em;
+  margin-bottom: 5px;
+}
+
+#branding {
+  text-align: right;
+  padding-right: 5px;
+}
+
+#disclaimer {
+  font-size: 9px;
+  clear: both;
+  padding-top: 20px;
+}
+
+.translate {
+  float: right;
+  font-size: smaller;
+  padding-right: 5px;
+}

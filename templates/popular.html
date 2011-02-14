@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Translation Telephone: Popular {% endblock %}
+{% block content %}
+
+      <p>Here are some popular phrases that people have passed through translation.
+	Click them to see what they turned into, and when you're bored of that, <a href="/">try it yourself!</a></p>
+	
+      <div id="popular"></div>
+
+{% endblock %}
+{% block script %}
+<script>
+google.setOnLoadCallback(initPopular);
+</script>
+{% endblock %}

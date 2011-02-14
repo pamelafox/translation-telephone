@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+    <!-- Show a "Please Upgrade" box to both IE7 and IE6 users (Edit to IE 6 if you just want to show it to IE6 users) - jQuery will load the content from js/ie.html into the div -->
+    
+    <!--[if lte IE 7]>
+        <div class="ie grid_7"></div>
+    <![endif]-->
+    
+    <div id="main" class="grid_8 alpha">
+      <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message from one language to the other using Google Translate and then translates it to the original language. Have fun!
+      </p>
+      <div>
+        <label>Enter your message (hint: longer is better) or try <a href="javascript:void(0);" onclick="useRandom();">a random one</a>:<br>
+	      <input id="message" type="text" value="" maxlength="250">
+	    </label>
+        <button onclick="start()">Go!</button>
+      </div>
+      
+      <div id="branding"></div>
+   
+      <div id="translations"></div>
+       
+       <div id="share">
+	     All done! Now you can share it via this URL:<br>
+         <input type="text" readonly id="url" size="100"/>
+         <br>
+         ... or you can scroll up and make a new one!
+       </div>
+    
+    </div>
+    
+    <div id="sidebar" class="grid_4 omega">
+    
+      <aside class="widget">
+        <h3>Recent:</h3>
+        <div id="recent"></div>
+        <a href="/recent">See more</a>
+      </aside>
+
+      <aside class="widget">
+        <h3>Popular:</h3>
+ 	    <div id="popular"></div>
+        <a href="/popular">See more</a>
+      </aside>
+
+    </div>
+
+{% endblock %}
+{% block script %}
+<script>
+google.setOnLoadCallback(initMain);
+</script>
+{% endblock %}
