@@ -7,13 +7,14 @@
     <![endif]-->
     
     <div id="main" class="grid_8 alpha">
-      <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message from one language to the other using Google Translate and then translates it to the original language. Have fun!
+      <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message to 20 random languages using Google Translate and finally translates it back to the original language. Have fun!
       </p>
       <div>
-        <label>Enter your message (hint: longer is better) or try <a href="javascript:void(0);" onclick="useRandom();">a random one</a>:<br>
-	      <input id="message" type="text" value="" maxlength="250">
-	    </label>
-        <button onclick="start()">Go!</button>
+	    <form onsubmit="start(); return false;">
+	        <label for="message">Enter your message (hint: longer is better) or try <a href="javascript:void(0);" onclick="useRandom();">a random one</a>:</label><br>
+		    <input id="message" type="text" value="" maxlength="250">
+	        <button type="submit">Go!</button>
+        </form>
       </div>
       
       <div id="branding"></div>
@@ -31,18 +32,28 @@
     
     <div id="sidebar" class="grid_4 omega">
     
-      <aside class="widget">
+      <aside id="recent_section" class="widget">
         <h3>Recent:</h3>
         <div id="recent"></div>
         <a href="/recent">See more</a>
       </aside>
 
-      <aside class="widget">
+      <aside id="popular_section" class="widget">
         <h3>Popular:</h3>
  	    <div id="popular"></div>
         <a href="/popular">See more</a>
       </aside>
-
+      
+      <aside id="yours_section" class="widget" style="display:none;">
+        <h3>Yours:</h3>
+ 	    <div id="yours"></div>
+        <a href="/yours">See more</a>
+      </aside>
+      
+      <aside id="chromepromo" class="widget" style="display:none;">
+         <img src="http://code.google.com/p/chrome-os/logo" style="float: right; width: 40px;">
+         Install our <a href="https://chrome.google.com/extensions/detail/cfocpdimpdkddnocofmcclllmjgkhngk">Chrome Extension</a> so you can easily translate phrases you see online. 
+      </aside>
     </div>
 
 {% endblock %}

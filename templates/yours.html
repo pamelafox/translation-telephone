@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Translation Telephone: Yours {% endblock %}
+{% block content %}
+
+      <p>Here are the phrases you've sent through translation. <a href="/">Send some more!</a></p>
+	
+      <div id="yours"></div>
+      
+      <p style="margin-top 10px; font-size: smaller">Note: This information is stored only in your browser, and it may not be 100% accurate.</p>
+{% endblock %}
+{% block script %}
+<script>
+google.setOnLoadCallback(initYours);
+</script>
+{% endblock %}

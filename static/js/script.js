@@ -57,15 +57,18 @@ var allLangs = [
 
 var randomMessages = [
   "The massive monster ate 100 hot dogs and then puked orange junk all over his wife.",
-  "Let us go then, you and I,	when the evening is spread out against the sky, like a patient etherised upon a table.",
-  "I like 'em round, and big, and when I'm throwin' a gig I just can't help myself, I'm actin' like an animal."
-]
+  "I like 'em round, and big, and when I'm throwin' a gig I just can't help myself, I'm actin' like an animal.",
+  "To be or not to be, that is the question.",
+  "You may say that I'm a dreamer, But I'm not the only one, I hope someday you'll join us, And the world will be as one."
+];
+
 var currentLang;
 var currentMessage;
 var startLanguage;
 var targetLangs;
 var translations = [];
 var userGenerated = false;
+var LS_ROUNDS = 'rounds';
 
 function start() {
   $('#share').hide();
@@ -117,9 +120,10 @@ function start() {
 function translateNextMessage() {
   currentLang++;
   if (currentLang == (targetLangs.length-1)) {
+    var startMessage = translations[0].message;
     $.ajax({
       url: 'round',
-      data: {translations: JSON.stringify(translations), usergen: userGenerated, message: translations[0].message}, 
+      data: {translations: JSON.stringify(translations), usergen: userGenerated, message: startMessage}, 
       dataType: 'text',
       type: 'post', 
       success: function(response) {
@@ -127,8 +131,19 @@ function translateNextMessage() {
         $('#url').val('http://' + window.location.host + '/#' + id);
         window.location.hash = id;
         $('#share').show();
+        if (supportsStorage()) {
+          var rounds = localStorage.getItem('rounds');
+          if (rounds) {
+            rounds = JSON.parse(rounds);
+          } else {
+            rounds = [];
+          }
+          rounds.push({'id': id, 'message': startMessage, 'date': new Date().getTime()});
+          localStorage.setItem(LS_ROUNDS, JSON.stringify(rounds));
+          getYours(3);
+        }
       }
-     })
+     });
      return;
   }
   
@@ -217,17 +232,56 @@ function getRounds(order, div, num) {
    });
 }
 
+
+function getYours(num) {
+  if (!supportsStorage) return;
+  
+  function dateSort(a, b){
+    //Compare "a" and "b" in some fashion, and return -1, 0, or 1
+    return (b.date - a.date);
+  }
+  
+  var rounds = localStorage.getItem(LS_ROUNDS);
+  if (rounds) {
+    rounds = JSON.parse(rounds);
+    rounds.sort(dateSort);
+    $('#yours').empty();
+    for (var i = 0; i < Math.min(num, rounds.length); i++) {
+      addRound(rounds[i], $('#yours'));
+    }
+    $('#yours_section').show();
+  }
+}
+
+
+function supportsStorage() {
+  try {
+    return 'localStorage' in window && window['localStorage'] !== null;
+  } catch (e) {
+    return false;
+  }
+}
+
+
 function initMain() {
    // Load round in hash
    var id = window.location.hash.replace('#', '');
-   if (id.length > 0) {
+   if (id.indexOf('message=') > -1 ) {
+     $('#message').val(id.split('=')[1]);
+     start();
+   } else if (id.length > 0) {
      loadRound(id);
    }
    
+   if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
+     $('#chromepromo').show();
+   }
+     
    google.language.getBranding('branding');
    
    getRounds('-date', $('#recent'), 3);
    getRounds('-views', $('#popular'), 3);
+   getYours(3);
    $('#message').keyup(function() {
      userGenerated = true;
    })   
@@ -239,5 +293,9 @@ function initRecent() {
 
 function initPopular() {
   getRounds('-views', $('#popular'), 30);
+}
+
+function initYours() {
+  getYours(1000);
 }
 

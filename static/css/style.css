@@ -239,3 +239,10 @@ button:hover {
   font-size: smaller;
   padding-right: 5px;
 }
+
+#chromepromo {
+  font-size: smaller;
+  padding: 5px;
+  border: 1px solid #ED6511;
+  background: rgba(230, 182, 71, .3);
+}

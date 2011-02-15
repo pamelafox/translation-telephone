@@ -48,6 +48,11 @@ class PopularHandler(BasePageHandler):
     return 'popular.html'
 
 
+class YoursHandler(BasePageHandler):
+  def get_filename(self):
+    return 'yours.html'
+
+
 class RoundHandler(webapp.RequestHandler):
   
   def get(self):
@@ -92,6 +97,7 @@ def main():
     application = webapp.WSGIApplication([('/', IndexHandler),
                                           ('/recent', RecentHandler),
                                           ('/popular', PopularHandler),
+                                          ('/yours', YoursHandler),
                                           ('/round', RoundHandler),
                                           ('/rounds', RoundsHandler)],
                                          debug=True)

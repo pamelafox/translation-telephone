@@ -3,7 +3,7 @@
 # http://forrst.com/posts/Host_a_Static_HTML_Site_on_Google_App_Engine-BlA
 
 application: translation-telephone
-version: 5 
+version: 11 
 runtime: python
 api_version: 1
 
