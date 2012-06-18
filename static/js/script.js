@@ -1,5 +1,3 @@
-google.load("language", "1");
-
 // Valid languages for translation pairs
 var allLangs = [
 'AFRIKAANS',
@@ -318,7 +316,6 @@ function shareTwitter() {
     '?url=' + tweetUrl.replace('#', '%23');
     //'&text=Check+out+this+funny+translation';
   //replace('#', '%23');
-  console.log(url);
   window.open(url,
     '_blank', 'resizable=0,scrollbars=0,width=690,height=415');
 }
@@ -356,9 +353,8 @@ function initMain() {
    } else if (id.length > 0) {
      loadRound(id);
    }
-   
-   google.language.getBranding('branding');
-   
+
+
    getRounds('-date', $('#recent'), 3);
    getRounds('-views', $('#popular'), 3);
    getYours(3);
@@ -383,3 +379,4 @@ function initYours() {
   getYours(1000);
 }
 
+google.API_KEY = 'AIzaSyBLBeqjz4y-yYybCig6p1PMKnt9g4PLLNU';
