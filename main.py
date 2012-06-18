@@ -65,6 +65,8 @@ class RoundHandler(webapp.RequestHandler):
     round = models.Round()
     round.translations = self.request.get('translations')
     round.message = self.request.get('message')
+    round.language = self.request.get('language')
+    round.endmessage = self.request.get('endmessage')
     if self.request.get('usergen') == 'false':
       round.usergen = False
     round.put()

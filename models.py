@@ -13,6 +13,8 @@ from google.appengine.ext.db import Key
 
 class Round(db.Model):
   message = db.StringProperty(multiline=True)
+  endmessage = db.StringProperty(multiline=True)
+  language = db.StringProperty(default='ENGLISH')
   translations = db.TextProperty()
   date = db.DateTimeProperty(auto_now_add=True)
   views = db.IntegerProperty(default=1)
@@ -20,7 +22,8 @@ class Round(db.Model):
 
   def to_dict(self):
     return {'id': self.key().id(),
-            'message': self.message}
+            'message': self.message,
+            'views': self.views}
             
   def get_views(self):
     views = self.views

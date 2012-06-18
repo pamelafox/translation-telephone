@@ -1,0 +1,17 @@
+{
+  "name": "Translation Telephone",
+  "description": "Enter a phrase, watch it get translated to 20 random languages, and see how it turns out in the original language.",
+  "version": "1",
+  "app": {
+    "urls": [
+      "http://www.translation-telephone.com/"
+    ],
+    "launch": {
+      "web_url": "http://www.translation-telephone.com/"
+    }
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "permissions": []
+}

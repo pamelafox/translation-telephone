@@ -71,13 +71,18 @@ var userGenerated = false;
 var LS_ROUNDS = 'rounds';
 
 function start() {
+  
+  if ($('#message').val().length == 0) {
+    alert('Please enter something longer than that.');
+    return;
+  }
+  
+  // Set new globals
   $('#share').hide();
   $('#translations').empty();
   translations = [];
-  // Set new globals
-  currentMessage = document.getElementById('message').value;
+  currentMessage = $('#message').val();
   currentLang = 0;
-  
   startLanguage = 'ENGLISH';
   
   // Try to detect non-english language
@@ -123,7 +128,7 @@ function translateNextMessage() {
     var startMessage = translations[0].message;
     $.ajax({
       url: 'round',
-      data: {translations: JSON.stringify(translations), usergen: userGenerated, message: startMessage}, 
+      data: {translations: JSON.stringify(translations), usergen: userGenerated, message: startMessage, language: translations[0].language, endmessage: translations[translations.length-1].message}, 
       dataType: 'text',
       type: 'post', 
       success: function(response) {
@@ -131,6 +136,7 @@ function translateNextMessage() {
         $('#url').val('http://' + window.location.host + '/#' + id);
         window.location.hash = id;
         $('#share').show();
+        $('#share_original').show();
         if (supportsStorage()) {
           var rounds = localStorage.getItem('rounds');
           if (rounds) {
@@ -154,6 +160,11 @@ function translateNextMessage() {
       var translation = {};
       translation.language = targetLangs[currentLang+1];
       translation.message = result.translation;
+      if (translation.message == '') {
+        alert('Woah, crazy! That translated to nothing in ' + translation.language + ' - please try a different, longer message!');
+        translation.message = '&nbsp;';
+        return;
+      }
       translations.push(translation);
       addTranslation(translation);
       window.scroll(0, document.body.offsetHeight);
@@ -169,6 +180,7 @@ function addTranslation(translation) {
   var message = $('<div class="message"></div>').appendTo(div).html(translation.message);
   
   if (translation.language != startLanguage) {
+    /*
     var url = 'http://translate.google.com/#' + google.language.Languages[translation.language] + '|' + google.language.Languages[startLanguage] + '|' + translation.message;
     var link = $('<a style="padding-left: 4px;" target="_blank" href="' + url + '">&rarr; Translate to ' + startLanguage + '</a>').appendTo(language).hide();
     div.mouseover(function() {
@@ -177,6 +189,7 @@ function addTranslation(translation) {
     div.mouseout(function() {
       link.hide();
     });
+    */
   }
   $('#translations').append(div);
 }
@@ -200,6 +213,9 @@ function loadRound(id) {
        for (var i = 0; i < translations.length; i++) {
          addTranslation(translations[i]);
        }
+       $('#share').show();
+       $('#share_original').show();
+       $('#url').val('http://' + window.location.host + '/#' + id);
      },
      error: function(xhr, status) {
      }
@@ -209,11 +225,30 @@ function loadRound(id) {
 function addRound(round, parent) {
   var url = 'http://' + window.location.host + '/#' + round.id;
   var div = $('<div class="round"></div>');
-  div.html('<a href="' + url + '">' + round.message + '</a>');
+  var html = '<a href="' + url + '">' + round.message + '</a>';
+  if (round.views) html += '<div class="views">' + round.views + ' views</div>'
+  div.html(html);
   div.click(function() {
     loadRound(round.id);
   })
   parent.append(div);
+}
+
+function filterText(txt) {
+  
+  function repeatString(str, num) {
+    return new Array(num + 1).join(str);
+  }
+  // 7 Dirty Words
+  var filter = ['shit', 'piss', 'fuck', 'cunt', 'cocksucker', 'motherfucker', 'tits'];
+  
+  for(var i=0; i<filter.length; i++) {
+    var pattern = new RegExp('\\b' + filter[i] + '\\b', 'g');
+    var replacement = repeatString('*', filter[i].length);
+    txt = txt.replace(pattern, replacement);
+  }
+
+  return txt;
 }
 
 
@@ -224,6 +259,7 @@ function getRounds(order, div, num) {
     type: 'get', 
     success: function(rounds) {
       for (var i = 0; i < rounds.length; i++) {
+        rounds[i].message = filterText(rounds[i].message);
         addRound(rounds[i], div);
       }
     },
@@ -262,6 +298,54 @@ function supportsStorage() {
   }
 }
 
+function startOver() {
+  $(window).scrollTop(0);
+  $('#message').val('').focus();
+}
+
+function shareBuzz() {
+  var message = 'Check out the translation I got from Translation Telephone!';
+  var url = 'http://www.google.com/buzz/post?' +
+    'message=' + message.replace(' ', '%20')  + 
+    '&url=' + encodeURIComponent(window.location.href);
+  window.open(url,
+    '_blank', 'resizable=0,scrollbars=0,width=690,height=415');
+}
+
+function shareTwitter() {
+  var tweetUrl = 'http://www.translation-telephone.com/#4249';
+  var url = 'http://www.twitter.com/share' +
+    '?url=' + tweetUrl.replace('#', '%23');
+    //'&text=Check+out+this+funny+translation';
+  //replace('#', '%23');
+  console.log(url);
+  window.open(url,
+    '_blank', 'resizable=0,scrollbars=0,width=690,height=415');
+}
+
+function shareFacebook() {
+  var url = 'http://www.facebook.com/sharer.php?' +
+    't=Check+out+this+funny+translation';
+  window.open(url,
+    '_blank', 'resizable=0,scrollbars=0,width=690,height=415');
+}
+
+function showOriginal() {
+  window.scroll(0, 0);
+  $('#share_original').hide();
+  $('.translation').each(function(i) {
+    var language = $(this).find('.language').first().text();
+    var message = $(this).find('.message').first().text();
+    var srcLang = google.language.Languages[language];
+    var destLang = google.language.Languages[startLanguage];
+    var parent = this;
+    google.language.translate(message, srcLang, destLang, function(result) {
+      if (!result.error) {
+        $(parent).append('<div class="message_original">' + result.translation + '</div>');
+      }
+    });
+  });
+}
 
 function initMain() {
    // Load round in hash
@@ -273,10 +357,6 @@ function initMain() {
      loadRound(id);
    }
    
-   if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-     $('#chromepromo').show();
-   }
-     
    google.language.getBranding('branding');
    
    getRounds('-date', $('#recent'), 3);
@@ -284,7 +364,11 @@ function initMain() {
    getYours(3);
    $('#message').keyup(function() {
      userGenerated = true;
-   })   
+   });
+   
+   if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 && $('#chromepromo').attr('data-installed') != 'true') {
+     $('#chromepromo').show();
+   }
 }
 
 function initRecent() {
