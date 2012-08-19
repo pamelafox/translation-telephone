@@ -64,7 +64,7 @@ class Round(db.Model):
     task_name = '-'.join([cls.kind(), re.sub('[^a-zA-Z0-9-]*', '', str(id)), 'views', str(interval), str(interval_num)])
     try:
       deferred.defer(cls.flush_views, id, _name=task_name)
-    except (taskqueue.TaskAlreadyExistsError, taskqueue.TombstonedTaskError, taskqueue.TransientError):
+    except:
       pass
 
 def get_interval_number(ts, duration):

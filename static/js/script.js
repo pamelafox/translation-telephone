@@ -66,6 +66,7 @@ var startLanguage;
 var targetLangs;
 var translations = [];
 var userGenerated = false;
+var ignoreHashChange = false;
 var LS_ROUNDS = 'rounds';
 
 function start() {
@@ -132,6 +133,7 @@ function translateNextMessage() {
       success: function(response) {
         var id = response;
         $('#url').val('http://' + window.location.host + '/#' + id);
+        ignoreHashChange = true;
         window.location.hash = id;
         $('#share').show();
         $('#share_original').show();
@@ -202,7 +204,7 @@ function loadRound(id) {
   $.ajax({
      url: 'round?id=' + id,
      dataType: 'json',
-     type: 'get', 
+     type: 'get',
      success: function(translations) {
        $('#message').val(translations[0].message);
        startLanguage = translations[0].language;
@@ -344,38 +346,54 @@ function showOriginal() {
   });
 }
 
+function loadFromHash() {
+  // Load round in hash
+  if (!ignoreHashChange) {
+     var id = window.location.hash.replace('#', '');
+     
+     if (id.indexOf('message=') > -1 ) {
+       $('#message').val(id.split('=')[1]);
+       start();
+     } else if (id.length > 0) {
+       loadRound(id);
+     }
+   }
+   ignoreHashChange = false;
+}
+
+function initAll() {
+  window.onhashchange = function() {
+    loadFromHash();
+  };
+}
+
 function initMain() {
-   // Load round in hash
-   var id = window.location.hash.replace('#', '');
-   if (id.indexOf('message=') > -1 ) {
-     $('#message').val(id.split('=')[1]);
-     start();
-   } else if (id.length > 0) {
-     loadRound(id);
-   }
+  initAll();
+  loadFromHash();
+  getRounds('-date', $('#recent'), 3);
+  getRounds('-views', $('#popular'), 3);
+  getYours(3);
+  $('#message').keyup(function() {
+   userGenerated = true;
+  });
 
-
-   getRounds('-date', $('#recent'), 3);
-   getRounds('-views', $('#popular'), 3);
-   getYours(3);
-   $('#message').keyup(function() {
-     userGenerated = true;
-   });
-   
-   if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 && $('#chromepromo').attr('data-installed') != 'true') {
-     $('#chromepromo').show();
-   }
+  if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 && $('#chromepromo').attr('data-installed') != 'true') {
+   $('#chromepromo').show();
+  }
 }
 
 function initRecent() {
+  initAll();
   getRounds('-date', $('#recent'), 30);
 }
 
 function initPopular() {
+  initAll();
   getRounds('-views', $('#popular'), 30);
 }
 
 function initYours() {
+  initAll();
   getYours(1000);
 }
 
