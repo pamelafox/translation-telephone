@@ -47,7 +47,7 @@ google.language.translate = function (query, srcLang, destLang, callback) {
     callback(result);
   }
 
-  var url = 'https://www.googleapis.com/language/translate/v2?key=' + google.API_KEY + '&source=' + srcLang + '&target=' + destLang + '&callback=JSONPCallback&q=' + query;
+  var url = 'https://script.google.com/macros/s/AKfycbzP0VUUuEYhQkepxstteW7rhOfchCqGCf29dbNzHAf4fAQlwFg/exec?key=' + google.API_KEY + '&source=' + srcLang + '&target=' + destLang + '&callback=JSONPCallback&q=' + encodeURIComponent(query);
   google.jsonp.fetch(url, processJSON);
 };
 
