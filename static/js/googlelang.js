@@ -41,13 +41,14 @@ google.language.translate = function (query, srcLang, destLang, callback) {
     var result = {};
     if (json.data && json.data.translations && json.data.translations.length) {
       result.translation = json.data.translations[0].translatedText;
+    } else if (json.error) {
+      result.error = json.error;
     } else {
       result.error = 'Error';
     }
     callback(result);
   }
-
-  var url = 'https://script.google.com/macros/s/AKfycbzP0VUUuEYhQkepxstteW7rhOfchCqGCf29dbNzHAf4fAQlwFg/exec?key=' + google.API_KEY + '&source=' + srcLang + '&target=' + destLang + '&callback=JSONPCallback&q=' + encodeURIComponent(query);
+  var url = 'https://script.google.com/macros/s/AKfycbzEXlRMEHQOc_4M7BIBQWvSc1X3POvzf_ifFfaNWeocVukZcfMc/exec?key=' + google.API_KEY + '&source=' + srcLang + '&target=' + destLang + '&callback=JSONPCallback&q=' + encodeURIComponent(query);
   google.jsonp.fetch(url, processJSON);
 };
 
@@ -175,6 +176,5 @@ google.language.Languages = {
     "VIETNAMESE": "vi",
     "WELSH": "cy",
     "YIDDISH": "yi",
-    "YORUBA": "yo",
-    "UNKNOWN": ""
+    "YORUBA": "yo"
 };

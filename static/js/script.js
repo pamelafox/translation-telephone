@@ -69,8 +69,9 @@ var userGenerated = false;
 var ignoreHashChange = false;
 var LS_ROUNDS = 'rounds';
 
-function start() {
-  
+function start(e) {
+  e && e.preventDefault();
+
   if ($('#message').val().length == 0) {
     alert('Please enter something longer than that.');
     return;
@@ -85,40 +86,30 @@ function start() {
   startLanguage = 'ENGLISH';
   
   // Try to detect non-english language
-  google.language.detect(currentMessage, function(result) {
-    if (!result.error) {
-      for (l in google.language.Languages) {
-        if (google.language.Languages[l] == result.language) {
-          startLanguage = l;
-          break;
-        }
-      }
+  var startLanguage = $('#languages option:selected').html();
+    
+  // Remove start language from possible languages
+  for (var i = 0; i < allLangs.length; i++) {
+    if (allLangs[i] == startLanguage) {
+      allLangs.splice(i, 1);
     }
-  
+  }
     
-    // Remove start language from possible languages
-    for (var i = 0; i < allLangs.length; i++) {
-      if (allLangs[i] == startLanguage) {
-        allLangs.splice(i, 1);
-      }
-    }
-    
-    // Pick X random languages
-    allLangs.sort(function() {
-      return (Math.round(Math.random())-0.5);
-    });
-    targetLangs = allLangs.slice(0, 20);
-    targetLangs.push(startLanguage);
-    
-    var translation = {};
-    translation.language = startLanguage;
-    translation.message = currentMessage;
-    translations.push(translation);
-    addTranslation(translation);
-    
-    // Start the translation!
-    translateNextMessage();
+  // Pick X random languages
+  allLangs.sort(function() {
+    return (Math.round(Math.random())-0.5);
   });
+  targetLangs = allLangs.slice(0, 20);
+  targetLangs.push(startLanguage);
+
+  var translation = {};
+  translation.language = startLanguage;
+  translation.message = currentMessage;
+  translations.push(translation);
+  addTranslation(translation);
+    
+  // Start the translation!
+  translateNextMessage();
 }
 
 function translateNextMessage() {
@@ -169,8 +160,10 @@ function translateNextMessage() {
       addTranslation(translation);
       window.scroll(0, document.body.offsetHeight);
       currentMessage = translation.message;
-    } 
-    translateNextMessage();
+      translateNextMessage();
+    } else {
+      alert(result.error);
+    }
   });
 }
 
@@ -373,6 +366,15 @@ function initMain() {
   getRounds('-date', $('#recent'), 3);
   getRounds('-views', $('#popular'), 3);
   getYours(3);
+
+ $.each(google.language.Languages, function(name, code) {
+    var option = $('<option>');
+    option.val(code);
+    option.html(name);
+    if (code == 'en') option.attr('selected', 'selected');
+    $('#languages').append(option);
+ });
+
   $('#message').keyup(function() {
    userGenerated = true;
   });
@@ -397,4 +399,4 @@ function initYours() {
   getYours(1000);
 }
 
-google.API_KEY = 'AIzaSyBLBeqjz4y-yYybCig6p1PMKnt9g4PLLNU';
+google.API_KEY = 'AIzaSyCFuPeWhLOT_8ZD-niPhfeBKOAfqC0J6-Y';

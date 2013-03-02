@@ -12,15 +12,19 @@
       
       <div>
 	    <form onsubmit="start(); return false;">
-	        <label for="message">Enter your message (hint: longer is better) or try <a href="javascript:void(0);" onclick="useRandom();">a random one</a>:</label><br>
+	        <label for="message">Enter your message (hint: longer is better) and tell us what language its in:</label><br>
 		    <input id="message" type="text" value="" maxlength="250">
+                    <select id="languages"></select>
 	        <button type="submit">Go!</button>
         </form>
       </div>
       
       <div id="branding"></div>
    
-      <div id="translations"></div>
+      <div id="translations">
+      <br><br><br>
+      Can't think of anything? Check out the most popular translations on the side ➜
+      </div>
        
        <div id="share">
          <p><b>Well, that's how the message turned out! What next?</b></p>
