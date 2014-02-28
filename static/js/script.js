@@ -363,8 +363,6 @@ function initAll() {
 function initMain() {
   initAll();
   loadFromHash();
-  getRounds('-date', $('#recent'), 3);
-  getRounds('-views', $('#popular'), 3);
   getYours(3);
 
  $.each(google.language.Languages, function(name, code) {

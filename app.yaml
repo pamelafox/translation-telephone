@@ -2,7 +2,7 @@
 # from darktable aka Calvin Rein
 # http://forrst.com/posts/Host_a_Static_HTML_Site_on_Google_App_Engine-BlA
 
-application: translation-telephone
+application: translation-telephone-edu
 version: 13 
 runtime: python
 api_version: 1

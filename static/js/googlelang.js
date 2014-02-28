@@ -48,7 +48,7 @@ google.language.translate = function (query, srcLang, destLang, callback) {
     }
     callback(result);
   }
-  var url = 'https://script.google.com/macros/s/AKfycbzEXlRMEHQOc_4M7BIBQWvSc1X3POvzf_ifFfaNWeocVukZcfMc/exec?key=' + google.API_KEY + '&source=' + srcLang + '&target=' + destLang + '&callback=JSONPCallback&q=' + encodeURIComponent(query);
+  var url = 'https://script.google.com/macros/s/AKfycbyoA5nMeAAm2Amg4vyq0_O05fKYRunZflenID8jPPz3ZlWY0w/exec?key=' + google.API_KEY + '&source=' + srcLang + '&target=' + destLang + '&callback=JSONPCallback&q=' + encodeURIComponent(query);
   google.jsonp.fetch(url, processJSON);
 };
 
