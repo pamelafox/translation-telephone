@@ -1,11 +1,8 @@
-# boilerplate server config for google app engine
-# from darktable aka Calvin Rein
-# http://forrst.com/posts/Host_a_Static_HTML_Site_on_Google_App_Engine-BlA
-
-application: translation-telephone-edu
+application: the-prototype
 version: 13 
-runtime: python
+runtime: python27
 api_version: 1
+threadsafe: true
 
 default_expiration: "30d"
 
@@ -42,9 +39,11 @@ handlers:
   static_files: static/js/\1
   upload: static/js/(.*\.js)
 
-- url: /_ah/queue/deferred
-  script: $PYTHON_LIB/google/appengine/ext/deferred/handler.py
-  login: admin
-
 - url: /.*
-  script: main.py
+  script: main.app
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest 

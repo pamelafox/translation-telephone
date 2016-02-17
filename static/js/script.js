@@ -99,7 +99,7 @@ function start(e) {
   allLangs.sort(function() {
     return (Math.round(Math.random())-0.5);
   });
-  targetLangs = allLangs.slice(0, 20);
+  targetLangs = allLangs.slice(0, 12);
   targetLangs.push(startLanguage);
 
   var translation = {};

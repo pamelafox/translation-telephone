@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "templates/base.html" %}
 {% block content %}
     <!-- Show a "Please Upgrade" box to both IE7 and IE6 users (Edit to IE 6 if you just want to show it to IE6 users) - jQuery will load the content from js/ie.html into the div -->
     
@@ -30,7 +30,7 @@
          <p><b>Well, that's how the message turned out! What next?</b></p>
          <p>&#9654; You can share it simply by linking to this URL:<br>
            <input type="text" readonly id="url" size="100"/></p>
-         <p id="share_original">&#9654; You can <a href="javascript:void(0);" onclick="showOriginal();">show the translation to the start language</a> at each step to see how or if the meaning changed.</p>
+         <!--<p id="share_original">&#9654; You can <a href="javascript:void(0);" onclick="showOriginal();">show the translation to the start language</a> at each step to see how or if the meaning changed.</p>-->
          <p>&#9654; You can <a href="javascript:void(0);" onclick="startOver();">try a new message</a> &mdash; lyrics and quotes work well.</p>
        </div>
     

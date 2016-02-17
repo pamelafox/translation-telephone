@@ -1,15 +1,21 @@
 import os
 import random
 import logging
+import webapp2
+import jinja2
+import json
 
-from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
-from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 
-from django.utils import simplejson
-
 import models
+
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
+
 
 def is_debug():
   if os.environ['SERVER_SOFTWARE'].startswith('Dev'):
@@ -18,15 +24,15 @@ def is_debug():
     return False
     
 
-class BasePageHandler(webapp.RequestHandler):
+class BasePageHandler(webapp2.RequestHandler):
   
   def get(self):
     page = memcache.get(self.get_filename())
     if is_debug(): 
       page = None
     if page is None:
-      path = os.path.join(os.path.dirname(__file__), 'templates/' + self.get_filename())
-      page = template.render(path, {})
+      template = JINJA_ENVIRONMENT.get_template('templates/%s' % self.get_filename())
+      page = template.render({})
       memcache.set(self.get_filename(), page, 60*1)
     self.response.out.write(page)
   
@@ -53,7 +59,7 @@ class YoursHandler(BasePageHandler):
     return 'yours.html'
 
 
-class RoundHandler(webapp.RequestHandler):
+class RoundHandler(webapp2.RequestHandler):
   
   def get(self):
     id = int(self.request.get('id'))
@@ -73,7 +79,7 @@ class RoundHandler(webapp.RequestHandler):
     self.response.out.write(round.key().id())
     
 
-class RoundsHandler(webapp.RequestHandler):
+class RoundsHandler(webapp2.RequestHandler):
   
   def get(self):
     order = self.request.get('order')
@@ -89,21 +95,16 @@ class RoundsHandler(webapp.RequestHandler):
         rounds = rounds[0:num]
       else:
         rounds = models.Round.all().filter('usergen = ', True).order(order).fetch(num)
-      rounds_str = simplejson.dumps([r.to_dict() for r in rounds])
+      rounds_str = json.dumps([r.to_dict() for r in rounds])
       memcache.set(order, rounds_str, 60)
     # Might change popular to just be last week/day/etc
     self.response.out.write(rounds_str)
     
     
-def main():
-    application = webapp.WSGIApplication([('/', IndexHandler),
+app = webapp2.WSGIApplication([('/', IndexHandler),
                                           ('/recent', RecentHandler),
                                           ('/popular', PopularHandler),
                                           ('/yours', YoursHandler),
                                           ('/round', RoundHandler),
                                           ('/rounds', RoundsHandler)],
                                          debug=True)
-    util.run_wsgi_app(application)
-
-if __name__ == '__main__':
-    main()
