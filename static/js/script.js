@@ -1,61 +1,5 @@
-// Valid languages for translation pairs
-var allLangs = [
-'AFRIKAANS',
-'ALBANIAN',
-'ARABIC',
-'BELARUSIAN',
-'BULGARIAN',
-'CATALAN', 
-'CHINESE',
-'CROATIAN',
-'CZECH',
-'DANISH',
-'DUTCH',
-'ENGLISH',
-'FILIPINO',
-'FINNISH',
-'FRENCH',
-'GALICIAN',
-'GERMAN',
-'GREEK',
-'HAITIAN_CREOLE',
-'HEBREW',
-'HINDI',
-'HUNGARIAN',
-'ICELANDIC',
-'INDONESIAN',
-'IRISH',
-'ITALIAN',
-'JAPANESE',
-'KOREAN',
-'LATVIAN',
-'LITHUANIAN',
-'MACEDONIAN',
-'MALAY',
-'MALTESE',
-'NORWEGIAN',
-'PERSIAN',
-'POLISH',
-'PORTUGUESE',
-'ROMANIAN',
-'RUSSIAN',
-'SERBIAN',
-'SLOVAK',
-'SLOVENIAN',
-'SPANISH',
-'SWAHILI',
-'SWEDISH',
-'THAI',
-'TURKISH',
-'UKRAINIAN',
-'VIETNAMESE',
-'WELSH',
-'YIDDISH'
-];
-
 var randomMessages = [
   "The massive monster ate 100 hot dogs and then puked orange junk all over his wife.",
-  "I like 'em round, and big, and when I'm throwin' a gig I just can't help myself, I'm actin' like an animal.",
   "To be or not to be, that is the question.",
   "You may say that I'm a dreamer, But I'm not the only one, I hope someday you'll join us, And the world will be as one."
 ];
@@ -88,6 +32,7 @@ function start(e) {
   // Try to detect non-english language
   var startLanguage = $('#languages option:selected').html();
     
+  var allLangs = Object.keys(yandex.LANGUAGES);
   // Remove start language from possible languages
   for (var i = 0; i < allLangs.length; i++) {
     if (allLangs[i] == startLanguage) {
@@ -144,9 +89,9 @@ function translateNextMessage() {
      return;
   }
   
-  var srcLang = google.language.Languages[targetLangs[currentLang]];
-  var destLang = google.language.Languages[targetLangs[currentLang+1]];
-  google.language.translate(currentMessage, srcLang, destLang, function(result) {
+  var srcLang = yandex.LANGUAGES[targetLangs[currentLang]];
+  var destLang = yandex.LANGUAGES[targetLangs[currentLang+1]];
+  yandex.translate(currentMessage, srcLang, destLang, function(result) {
     if (!result.error) {
       var translation = {};
       translation.language = targetLangs[currentLang+1];
@@ -161,6 +106,9 @@ function translateNextMessage() {
       window.scroll(0, document.body.offsetHeight);
       currentMessage = translation.message;
       translateNextMessage();
+    } else if (result.error = 501) {
+      // Language pair not supported
+      translateNextMessage();
     } else {
       alert(result.error);
     }
@@ -171,18 +119,18 @@ function addTranslation(translation) {
   var div = $('<div class="translation"></div>');
   var language = $('<div class="language"></div>').appendTo(div).html(translation.language);
   var message = $('<div class="message"></div>').appendTo(div).html(translation.message);
-  
+  var poweredUrl = 'https://translate.yandex.com/';
+  var powered = $('<a></a>').appendTo(div).attr('href', poweredUrl).text('Powered by Yandex.Translate');
+ 
   if (translation.language != startLanguage) {
-    /*
-    var url = 'http://translate.google.com/#' + google.language.Languages[translation.language] + '|' + google.language.Languages[startLanguage] + '|' + translation.message;
-    var link = $('<a style="padding-left: 4px;" target="_blank" href="' + url + '">&rarr; Translate to ' + startLanguage + '</a>').appendTo(language).hide();
+    var translateUrl = poweredUrl + '?lang=' + yandex.LANGUAGES[translation.language] + '-' + yandex.LANGUAGES[startLanguage] + '&text=' + translation.message;
+    var link = $('<a style="padding-left: 4px;" target="_blank" href="' + translateUrl + '">&rarr; Translate to ' + startLanguage + '</a>').appendTo(language).hide();
     div.mouseover(function() {
       link.show();
     });
     div.mouseout(function() {
       link.hide();
     });
-    */
   }
   $('#translations').append(div);
 }
@@ -296,13 +244,10 @@ function startOver() {
   $('#message').val('').focus();
 }
 
-function shareBuzz() {
-  var message = 'Check out the translation I got from Translation Telephone!';
-  var url = 'http://www.google.com/buzz/post?' +
-    'message=' + message.replace(' ', '%20')  + 
-    '&url=' + encodeURIComponent(window.location.href);
-  window.open(url,
-    '_blank', 'resizable=0,scrollbars=0,width=690,height=415');
+function showGlobal() {
+  $("#recent_section").show();
+  $("#popular_section").show();
+  $("#global_optin").hide();
 }
 
 function shareTwitter() {
@@ -328,10 +273,10 @@ function showOriginal() {
   $('.translation').each(function(i) {
     var language = $(this).find('.language').first().text();
     var message = $(this).find('.message').first().text();
-    var srcLang = google.language.Languages[language];
-    var destLang = google.language.Languages[startLanguage];
+    var srcLang = yandex.LANGUAGES[language];
+    var destLang = yandex.LANGUAGES[startLanguage];
     var parent = this;
-    google.language.translate(message, srcLang, destLang, function(result) {
+    yandex.translate(message, srcLang, destLang, function(result) {
       if (!result.error) {
         $(parent).append('<div class="message_original">' + result.translation + '</div>');
       }
@@ -363,9 +308,11 @@ function initAll() {
 function initMain() {
   initAll();
   loadFromHash();
+  getRounds('-date', $('#recent'), 3);
+  getRounds('-views', $('#popular'), 3);
   getYours(3);
 
- $.each(google.language.Languages, function(name, code) {
+ $.each(yandex.LANGUAGES, function(name, code) {
     var option = $('<option>');
     option.val(code);
     option.html(name);
@@ -397,4 +344,3 @@ function initYours() {
   getYours(1000);
 }
 
-google.API_KEY = 'AIzaSyCFuPeWhLOT_8ZD-niPhfeBKOAfqC0J6-Y';
