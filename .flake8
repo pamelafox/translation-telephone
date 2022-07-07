@@ -1,0 +1,5 @@
+[flake8]
+ignore = D203
+exclude = migrations/ 
+max-complexity = 10
+

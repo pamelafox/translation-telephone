@@ -1,5 +1,3 @@
-import unittest.mock
-
 import pytest
 
 import src

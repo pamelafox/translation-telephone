@@ -1,8 +1,5 @@
 import json
 
-import pytest
-import requests
-
 from src import translations
 
 
