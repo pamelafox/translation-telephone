@@ -1,18 +1,24 @@
 var yandex = window.yandex || {};
 
 yandex.translate = function (query, srcLang, destLang, callback) {
-  function processJSON(json) {
-    var result = {};
-    if (json.code === 200) {
-      result.translation = json.text[0];
-    } else {
-      result.error = json.code;
-    }
-    callback(result);
-  }
-  API_KEY = 'trnsl.1.1.20180118T010810Z.1141c38ce6f578a2.19bd0a818990ea96170bd59df0e1a2f882aefb1d';
-  var url = 'https://translate.yandex.net/api/v1.5/tr.json/translate';
-  $.getJSON(url, {key: API_KEY, text: query, lang: srcLang + '-' + destLang}, processJSON);
+  fetch("/translate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text: query, from: srcLang, to: destLang }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      let result = {};
+      if (data.code === 200) {
+        result.translation = data.text;
+      } else {
+        result.error = data.code;
+      }
+      callback(result);
+    })
+    .catch(console.error);
 };
 
 yandex.LANGUAGES = {
@@ -22,7 +28,7 @@ yandex.LANGUAGES = {
     "ARMENIAN": "hy",
     "AZERBAIJANI": "az",
     "BASQUE": "eu",
-    "BELARUSIAN": "be",
+    //"BELARUSIAN": "be",
     "BENGALI": "bn",
     "BULGARIAN": "bg",
     "BURMESE": "my",
@@ -33,7 +39,7 @@ yandex.LANGUAGES = {
     "DANISH": "da",
     "DUTCH": "nl",
     "ENGLISH": "en",
-    "ESPERANTO": "eo",
+    //"ESPERANTO": "eo",
     "ESTONIAN": "et",
     "FINNISH": "fi",
     "FRENCH": "fr",
@@ -55,10 +61,10 @@ yandex.LANGUAGES = {
     "KOREAN": "ko",
     "KYRGYZ": "ky",
     "LAOTHIAN": "lo",
-    "LATIN": "la",
+    //"LATIN": "la",
     "LATVIAN": "lv",
     "LITHUANIAN": "lt",
-    "LUXEMBOURGISH": "lb",
+    //"LUXEMBOURGISH": "lb",
     "MACEDONIAN": "mk",
     "MALAY": "ms",
     "MALAYALAM": "ml",
@@ -74,18 +80,18 @@ yandex.LANGUAGES = {
     "PUNJABI": "pa",
     "ROMANIAN": "ro",
     "RUSSIAN": "ru",
-    "SCOTS_GAELIC": "gd",
+    //"SCOTS_GAELIC": "gd",
     "SERBIAN": "sr",
-    "SINHALESE": "si",
+    //"SINHALESE": "si",
     "SLOVAK": "sk",
     "SLOVENIAN": "sl",
     "SPANISH": "es",
-    "SUNDANESE": "su",
+    //"SUNDANESE": "su",
     "SWAHILI": "sw",
     "SWEDISH": "sv",
-    "TAJIK": "tg",
+    //"TAJIK": "tg",
     "TAMIL": "ta",
-    "TAGALOG": "tl",
+    //"TAGALOG": "tl",
     "TATAR": "tt",
     "TELUGU": "te",
     "THAI": "th",
@@ -94,6 +100,6 @@ yandex.LANGUAGES = {
     "URDU": "ur",
     "UZBEK": "uz",
     "VIETNAMESE": "vi",
-    "WELSH": "cy",
-    "YIDDISH": "yi"
+    "WELSH": "cy"
+    //"YIDDISH": "yi"
 };

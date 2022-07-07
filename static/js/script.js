@@ -26,7 +26,7 @@ function start(e) {
   $('#translations').empty();
   translations = [];
   currentMessage = $('#message').val();
-  currentLang = 0;
+  currentLang = -1;
   startLanguage = 'ENGLISH';
   
   // Try to detect non-english language
@@ -45,6 +45,7 @@ function start(e) {
     return (Math.round(Math.random())-0.5);
   });
   targetLangs = allLangs.slice(0, 12);
+  targetLangs.unshift(startLanguage);
   targetLangs.push(startLanguage);
 
   var translation = {};
@@ -61,13 +62,17 @@ function translateNextMessage() {
   currentLang++;
   if (currentLang == (targetLangs.length-1)) {
     var startMessage = translations[0].message;
-    $.ajax({
-      url: 'round',
-      data: {translations: JSON.stringify(translations), usergen: userGenerated, message: startMessage, language: translations[0].language, endmessage: translations[translations.length-1].message}, 
-      dataType: 'text',
-      type: 'post', 
-      success: function(response) {
-        var id = response;
+    fetch("/rounds", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({translations: translations, usergen: userGenerated, message: startMessage, language: translations[0].language, endmessage: translations[translations.length-1].message})
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.status !== 'success') return;
+        var id = data.round.id 
         $('#url').val('http://' + window.location.host + '/#' + id);
         ignoreHashChange = true;
         window.location.hash = id;
@@ -84,11 +89,9 @@ function translateNextMessage() {
           localStorage.setItem(LS_ROUNDS, JSON.stringify(rounds));
           getYours(3);
         }
-      }
-     });
+      });
      return;
   }
-  
   var srcLang = yandex.LANGUAGES[targetLangs[currentLang]];
   var destLang = yandex.LANGUAGES[targetLangs[currentLang+1]];
   yandex.translate(currentMessage, srcLang, destLang, function(result) {
@@ -142,11 +145,11 @@ function useRandom() {
 }
 
 function loadRound(id) {
-  $.ajax({
-     url: 'round?id=' + id,
-     dataType: 'json',
-     type: 'get',
-     success: function(translations) {
+  fetch(`/rounds/${id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status !== 'success') return;
+      const translations = data.round.translations;
        $('#message').val(translations[0].message);
        startLanguage = translations[0].language;
        $('#share').hide();
@@ -157,10 +160,8 @@ function loadRound(id) {
        $('#share').show();
        $('#share_original').show();
        $('#url').val('http://' + window.location.host + '/#' + id);
-     },
-     error: function(xhr, status) {
-     }
-  });
+     })
+    .catch(console.error);
 }
 
 function addRound(round, parent) {
@@ -175,38 +176,19 @@ function addRound(round, parent) {
   parent.append(div);
 }
 
-function filterText(txt) {
-  
-  function repeatString(str, num) {
-    return new Array(num + 1).join(str);
-  }
-  // 7 Dirty Words
-  var filter = ['shit', 'piss', 'fuck', 'cunt', 'cocksucker', 'motherfucker', 'tits'];
-  
-  for(var i=0; i<filter.length; i++) {
-    var pattern = new RegExp('\\b' + filter[i] + '\\b', 'g');
-    var replacement = repeatString('*', filter[i].length);
-    txt = txt.replace(pattern, replacement);
-  }
-
-  return txt;
-}
-
 
 function getRounds(order, div, num) {
-  $.ajax({
-    url: 'rounds?order=' + order + '&num=' + num,
-    dataType: 'json',
-    type: 'get', 
-    success: function(rounds) {
+  fetch(`/rounds?order=${order}&num=${num}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status !== 'success') return;
+      const rounds = data.rounds;
       for (var i = 0; i < rounds.length; i++) {
-        rounds[i].message = filterText(rounds[i].message);
+        rounds[i].message = rounds[i].message;
         addRound(rounds[i], div);
       }
-    },
-    error: function(xhr, status) {
-    }
-   });
+    })
+    .catch(console.error);
 }
 
 
@@ -308,8 +290,8 @@ function initAll() {
 function initMain() {
   initAll();
   loadFromHash();
-  getRounds('-date', $('#recent'), 3);
-  getRounds('-views', $('#popular'), 3);
+  //getRounds('-date', $('#recent'), 3);
+  //getRounds('-views', $('#popular'), 3);
   getYours(3);
 
  $.each(yandex.LANGUAGES, function(name, code) {
