@@ -1,4 +1,6 @@
-import requests, uuid, json, os
+import requests
+import uuid
+import os
 
 
 def translate_with_azure(text, from_lang, to_lang):

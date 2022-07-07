@@ -1,7 +1,5 @@
 import os
 import random
-import logging
-import json
 
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -99,7 +97,7 @@ def rounds():
         num = int(request.args.get("num"))
         if order == "-views" and num < 5:  # Get 5 random popular ones
             rounds = (
-                RoundModel.query.filter(RoundModel.usergen == True)
+                RoundModel.query.filter(RoundModel.usergen == True) # noqa
                 .order_by(RoundModel.views.desc())
                 .limit(30)
             )
@@ -107,13 +105,13 @@ def rounds():
             rounds = rounds[0:num]
         elif order == "-views":
             rounds = (
-                RoundModel.query.filter(RoundModel.usergen == True)
+                RoundModel.query.filter(RoundModel.usergen == True) # noqa
                 .order_by(RoundModel.views.desc())
                 .limit(num)
             )
         else:
             rounds = (
-                RoundModel.query.filter(RoundModel.usergen == True)
+                RoundModel.query.filter(RoundModel.usergen == True) # noqa
                 .order_by(RoundModel.date.desc())
                 .limit(num)
             )
