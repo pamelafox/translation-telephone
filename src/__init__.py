@@ -6,12 +6,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.sql import func
 
-import translations
+from . import translations
 
 app = Flask(__name__)
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = "postgresql://postgres:postgres@localhost:5432/pamelafox"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@localhost:5432/pamelafox"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -97,7 +95,7 @@ def rounds():
         num = int(request.args.get("num"))
         if order == "-views" and num < 5:  # Get 5 random popular ones
             rounds = (
-                RoundModel.query.filter(RoundModel.usergen == True) # noqa
+                RoundModel.query.filter(RoundModel.usergen == True)  # noqa
                 .order_by(RoundModel.views.desc())
                 .limit(30)
             )
@@ -105,13 +103,13 @@ def rounds():
             rounds = rounds[0:num]
         elif order == "-views":
             rounds = (
-                RoundModel.query.filter(RoundModel.usergen == True) # noqa
+                RoundModel.query.filter(RoundModel.usergen == True)  # noqa
                 .order_by(RoundModel.views.desc())
                 .limit(num)
             )
         else:
             rounds = (
-                RoundModel.query.filter(RoundModel.usergen == True) # noqa
+                RoundModel.query.filter(RoundModel.usergen == True)  # noqa
                 .order_by(RoundModel.date.desc())
                 .limit(num)
             )
@@ -123,19 +121,8 @@ def translate():
     text = request.json["text"]
     from_lang = request.json["from"]
     to_lang = request.json["to"]
-    result = translations.translate_with_azure(text, from_lang, to_lang)[0]
-    if result.get("error"):
-        return "Error", 420
+    translation, error = translations.translate_with_azure(text, from_lang, to_lang)
+    if error:
         # TODO: if over quota, try yandex
-    return jsonify({"text": result["translations"][0]["text"], "code": 200})
-
-
-if __name__ == "__main__":
-    # This is used when running locally only. When deploying to Google App
-    # Engine, a webserver process such as Gunicorn will serve the app. This
-    # can be configured by adding an `entrypoint` to app.yaml.
-    # Flask's development server will automatically serve static files in
-    # the "static" directory. See:
-    # http://flask.pocoo.org/docs/1.0/quickstart/#static-files. Once deployed,
-    # App Engine itself will serve those files as configured in app.yaml.
-    app.run(host="127.0.0.1", port=8080, debug=True)
+        return jsonify({"status": "error", "message": error})
+    return jsonify({"status": "success", "text": translation})

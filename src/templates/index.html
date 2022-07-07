@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-    <!-- Show a "Please Upgrade" box to both IE7 and IE6 users (Edit to IE 6 if you just want to show it to IE6 users) - jQuery will load the content from js/ie.html into the div -->
-    
-    <!--[if lte IE 7]>
-        <div class="ie grid_7"></div>
-    <![endif]-->
-    
     <div id="main" class="grid_8 alpha">
       <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message to 20 random languages using <a href="https://translate.yandex.com/">Yandex Translate</a> and finally translates it back to the original language. Have fun!
       </p>
@@ -30,7 +24,6 @@
          <p><b>Well, that's how the message turned out! What next?</b></p>
          <p>&#9654; You can share it simply by linking to this URL:<br>
            <input type="text" readonly id="url" size="100"/></p>
-         <!--<p id="share_original">&#9654; You can <a href="javascript:void(0);" onclick="showOriginal();">show the translation to the start language</a> at each step to see how or if the meaning changed.</p>-->
          <p>&#9654; You can <a href="javascript:void(0);" onclick="startOver();">try a new message</a> &mdash; lyrics and quotes work well.</p>
        </div>
     
@@ -59,11 +52,6 @@
         <br>
         <a href="javascript:void(0);" onclick="showGlobal();">Show popular and recent translations</a>
       </div>
-     <!-- 
-      <aside id="chromepromo" class="widget" style="display:none;">
-         Install our <a href="https://chrome.google.com/extensions/detail/cfocpdimpdkddnocofmcclllmjgkhngk">Chrome Extension</a> so you can easily translate phrases you see online. 
-      </aside>
-      -->
     </div>
 
 {% endblock %}

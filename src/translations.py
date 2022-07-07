@@ -19,4 +19,6 @@ def translate_with_azure(text, from_lang, to_lang):
 
     request = requests.post(constructed_url, params=params, headers=headers, json=body)
     response = request.json()
-    return response
+    if (type(response) is dict) and (err := response.get("error", None)):
+        return None, err["message"]
+    return response[0]["translations"][0]["text"], None
