@@ -11,10 +11,10 @@ yandex.translate = function (query, srcLang, destLang, callback) {
     .then((response) => response.json())
     .then((data) => {
       let result = {};
-      if (data.code === 200) {
+      if (data.status === "success") {
         result.translation = data.text;
       } else {
-        result.error = data.code;
+        result.error = data.message;
       }
       callback(result);
     })
