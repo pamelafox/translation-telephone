@@ -6,35 +6,35 @@ from .translations import translate_with_azure
 from .models import RoundModel
 from .database import db
 
-all_routes = Blueprint("all_routes", __name__, template_folder="templates")
+main = Blueprint("main", __name__, template_folder="templates")
 
 
 def init_app(app):
-    app.register_blueprint(all_routes)
+    app.register_blueprint(main)
 
 
 # TODO: Cache-Control headers
-@all_routes.route("/")
+@main.route("/")
 def homepage():
     return render_template("index.html")
 
 
-@all_routes.route("/recent")
+@main.route("/recent")
 def recent():
     return render_template("recent.html")
 
 
-@all_routes.route("/popular")
+@main.route("/popular")
 def popular():
     return render_template("popular.html")
 
 
-@all_routes.route("/yours")
+@main.route("/yours")
 def yours():
     return render_template("yours.html")
 
 
-@all_routes.route("/rounds/<round_id>", methods=["GET"])
+@main.route("/rounds/<round_id>", methods=["GET"])
 def round(round_id):
     round = RoundModel.query.get_or_404(round_id)
     round.views += 1
@@ -43,7 +43,7 @@ def round(round_id):
     return jsonify({"status": "success", "round": round.to_dict()})
 
 
-@all_routes.route("/rounds", methods=["GET", "POST"])
+@main.route("/rounds", methods=["GET", "POST"])
 def rounds():
     if request.method == "POST":
         round = RoundModel()
@@ -83,7 +83,7 @@ def rounds():
         return jsonify({"status": "success", "rounds": [r.to_dict() for r in rounds]})
 
 
-@all_routes.route("/translate", methods=["POST"])
+@main.route("/translate", methods=["POST"])
 def translate():
     text = request.json["text"]
     from_lang = request.json["from"]
