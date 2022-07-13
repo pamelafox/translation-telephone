@@ -26,5 +26,5 @@ class RoundModel(db.Model):
             "message": self.message,
             "translations": self.translations,
             "views": self.views,
-            "date": self.date
+            "date": self.date,
         }

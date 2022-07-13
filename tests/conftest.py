@@ -4,12 +4,13 @@ import pytest
 from src import create_app
 from src.database import db as _db
 
-@pytest.fixture(scope='session')
+
+@pytest.fixture(scope="session")
 def app(request):
     """Session-wide test `Flask` application."""
     config_override = {
-        'TESTING': True,
-        'SQLALCHEMY_DATABASE_URI': 'postgresql://postgres:postgres@localhost:5432/transtel'
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "postgresql://postgres:postgres@localhost:5432/transtel",
     }
     app = create_app(config_override)
 
@@ -24,9 +25,10 @@ def app(request):
     return app
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def db(app, request):
     """Session-wide test database."""
+
     def teardown():
         _db.drop_all()
 
@@ -37,7 +39,7 @@ def db(app, request):
     return _db
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def session(db, request):
     """Creates a new database session for a test."""
     connection = db.engine.connect()
