@@ -11,7 +11,7 @@ def test_translate_with_azure(requests_mock):
     translation, error, source = translations.translate_with_azure("testing 1 2 3", "en", "es")
     assert translation == "pruebas 1 2 3"
     assert error is None
-    assert source == 'AZURE'
+    assert source == "AZURE"
 
 
 def test_translate_with_azure_error(requests_mock):
@@ -22,4 +22,4 @@ def test_translate_with_azure_error(requests_mock):
     translation, error, source = translations.translate_with_azure("testing 1 2 3", "en", "esp")
     assert translation is None
     assert error == "The target language is not valid."
-    assert source == 'AZURE'
+    assert source == "AZURE"
