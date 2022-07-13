@@ -1,4 +1,4 @@
-import {translate, SOURCES, LANGUAGES} from './googlelang.js';
+import {translate, SOURCES, LANGUAGES} from './translation.js';
 
 var currentLang;
 var currentMessage;
