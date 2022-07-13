@@ -38,6 +38,6 @@ jobs:
           options: "--check --verbose"
       - name: Run unit tests
         run: |
-          python -m pytests
+          pytest
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pytest_test
