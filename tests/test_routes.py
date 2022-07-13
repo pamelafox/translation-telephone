@@ -28,7 +28,7 @@ def test_html_routes(client, path, title):
 
 def test_translate_route(client, monkeypatch):
     monkeypatch.delenv("AZURE_TRANSLATE_API_KEY", raising=False)
-    monkeypatch.setattr(src.routes, "translate_with_azure", lambda text, t, f: ("hola", None))
+    monkeypatch.setattr(src.routes, "translate_with_azure", lambda text, t, f: ("hola", None, "AZURE"))
     response = client.post("/translate", json={"text": "hi", "from": "en", "to": "es"})
     response_json = response.get_json()
     assert response_json["text"] == "hola"
@@ -37,7 +37,7 @@ def test_translate_route(client, monkeypatch):
 
 def test_translate_route_error(client, monkeypatch):
     monkeypatch.delenv("AZURE_TRANSLATE_API_KEY", raising=False)
-    monkeypatch.setattr(src.routes, "translate_with_azure", lambda text, t, f: (None, "Error"))
+    monkeypatch.setattr(src.routes, "translate_with_azure", lambda text, t, f: (None, "Error", "AZURE"))
     response = client.post("/translate", json={"text": "hi", "from": "en", "to": "esp"})
     response_json = response.get_json()
     assert response_json["status"] == "error"
