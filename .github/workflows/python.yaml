@@ -40,4 +40,4 @@ jobs:
         run: |
           pytest
         env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pytest_test
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
