@@ -4,10 +4,6 @@ from .database import db, migrate
 
 
 def init_app(app):
-    app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ] = "postgresql://postgres:postgres@localhost:5432/pamelafox"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     migrate.init_app(app, db)
 
@@ -24,13 +20,11 @@ class RoundModel(db.Model):
     views = db.Column(db.SmallInteger(), default=1)
     usergen = db.Column(db.Boolean(), default=True)
 
-    def __repr__(self):
-        return f"<RoundModel {self.message}>"
-
     def to_dict(self):
         return {
             "id": self.id,
             "message": self.message,
             "translations": self.translations,
             "views": self.views,
+            "date": self.date
         }

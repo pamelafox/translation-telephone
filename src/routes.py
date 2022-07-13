@@ -51,8 +51,7 @@ def rounds():
         round.message = request.json["message"]
         round.language = request.json["language"]
         round.endmessage = request.json["endmessage"]
-        if request.json["usergen"] == "false":
-            round.usergen = False
+        round.usergen = request.json["usergen"]
         db.session.add(round)
         db.session.commit()
         return jsonify({"status": "success", "round": round.to_dict()})
@@ -60,15 +59,16 @@ def rounds():
     elif request.method == "GET":
         order = request.args.get("order")
         num = int(request.args.get("num"))
-        if order == "-views" and num < 5:  # Get 5 random popular ones
+        if order == "popular" and num < 5:  # Get 5 random popular ones
             rounds = (
                 RoundModel.query.filter(RoundModel.usergen == True)  # noqa
                 .order_by(RoundModel.views.desc())
                 .limit(30)
             )
+            rounds = list(rounds)
             random.shuffle(rounds)
             rounds = rounds[0:num]
-        elif order == "-views":
+        elif order == "popular":
             rounds = (
                 RoundModel.query.filter(RoundModel.usergen == True)  # noqa
                 .order_by(RoundModel.views.desc())

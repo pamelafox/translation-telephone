@@ -20,7 +20,7 @@ function start(e) {
     alert('Please enter something longer than that.');
     return;
   }
-  
+
   // Set new globals
   $('#share').hide();
   $('#translations').empty();
@@ -28,10 +28,10 @@ function start(e) {
   currentMessage = $('#message').val();
   currentLang = -1;
   startLanguage = 'ENGLISH';
-  
+
   // Try to detect non-english language
   var startLanguage = $('#languages option:selected').html();
-    
+
   var allLangs = Object.keys(yandex.LANGUAGES);
   // Remove start language from possible languages
   for (var i = 0; i < allLangs.length; i++) {
@@ -39,7 +39,7 @@ function start(e) {
       allLangs.splice(i, 1);
     }
   }
-    
+
   // Pick X random languages
   allLangs.sort(function() {
     return (Math.round(Math.random())-0.5);
@@ -53,7 +53,7 @@ function start(e) {
   translation.message = currentMessage;
   translations.push(translation);
   addTranslation(translation);
-    
+
   // Start the translation!
   translateNextMessage();
 }
@@ -72,7 +72,7 @@ function translateNextMessage() {
     .then((response) => response.json())
     .then((data) => {
         if (data.status !== 'success') return;
-        var id = data.round.id 
+        var id = data.round.id
         $('#url').val('http://' + window.location.host + '/#' + id);
         ignoreHashChange = true;
         window.location.hash = id;
@@ -124,7 +124,7 @@ function addTranslation(translation) {
   var message = $('<div class="message"></div>').appendTo(div).html(translation.message);
   var poweredUrl = 'https://translate.yandex.com/';
   var powered = $('<a></a>').appendTo(div).attr('href', poweredUrl).text('Powered by Yandex.Translate');
- 
+
   if (translation.language != startLanguage) {
     var translateUrl = poweredUrl + '?lang=' + yandex.LANGUAGES[translation.language] + '-' + yandex.LANGUAGES[startLanguage] + '&text=' + translation.message;
     var link = $('<a style="padding-left: 4px;" target="_blank" href="' + translateUrl + '">&rarr; Translate to ' + startLanguage + '</a>').appendTo(language).hide();
@@ -194,12 +194,12 @@ function getRounds(order, div, num) {
 
 function getYours(num) {
   if (!supportsStorage) return;
-  
+
   function dateSort(a, b){
     //Compare "a" and "b" in some fashion, and return -1, 0, or 1
     return (b.date - a.date);
   }
-  
+
   var rounds = localStorage.getItem(LS_ROUNDS);
   if (rounds) {
     rounds = JSON.parse(rounds);
@@ -270,7 +270,7 @@ function loadFromHash() {
   // Load round in hash
   if (!ignoreHashChange) {
      var id = window.location.hash.replace('#', '');
-     
+
      if (id.indexOf('message=') > -1 ) {
        $('#message').val(id.split('=')[1]);
        start();
@@ -290,8 +290,6 @@ function initAll() {
 function initMain() {
   initAll();
   loadFromHash();
-  //getRounds('-date', $('#recent'), 3);
-  //getRounds('-views', $('#popular'), 3);
   getYours(3);
 
  $.each(yandex.LANGUAGES, function(name, code) {
@@ -305,20 +303,16 @@ function initMain() {
   $('#message').keyup(function() {
    userGenerated = true;
   });
-
-  if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 && $('#chromepromo').attr('data-installed') != 'true') {
-   $('#chromepromo').show();
-  }
 }
 
 function initRecent() {
   initAll();
-  getRounds('-date', $('#recent'), 30);
+  getRounds('recent', $('#recent'), 30);
 }
 
 function initPopular() {
   initAll();
-  getRounds('-views', $('#popular'), 30);
+  getRounds('popular', $('#popular'), 30);
 }
 
 function initYours() {
