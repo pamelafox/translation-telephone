@@ -1,6 +1,6 @@
 Released under New BSD License
 http://www.opensource.org/licenses/bsd-license.php
- 
+
 Copyright (c) 2009-2010, Jayj.dk
 All rights reserved.
 

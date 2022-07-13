@@ -1,7 +1,7 @@
 """empty message
 
 Revision ID: 45811f048651
-Revises: 
+Revises:
 Create Date: 2022-07-06 13:09:41.156525
 
 """

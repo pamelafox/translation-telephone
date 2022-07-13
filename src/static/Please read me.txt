@@ -1,8 +1,8 @@
 Thanks for downloading my HTML5 and CSS3 theme.
 
-You can freely use this theme for both your private and commercial projects. You're allowed to remove the credit link in the footer, but please, please leave it there. It allows me continuing creating free themes. 
+You can freely use this theme for both your private and commercial projects. You're allowed to remove the credit link in the footer, but please, please leave it there. It allows me continuing creating free themes.
 
-I've commented some of the CSS, try to uncomment it and see what it does. 
+I've commented some of the CSS, try to uncomment it and see what it does.
 
 Learn more about HTML5 and CSS3:
 http://html5doctor.com/
@@ -29,7 +29,7 @@ Icons by http://wefunction.com/2008/07/function-free-icon-set/
 
 Released under New BSD License
 http://www.opensource.org/licenses/bsd-license.php
- 
+
 Copyright (c) 2009-2010, Jayj.dk
 All rights reserved.
 

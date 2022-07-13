@@ -280,4 +280,3 @@ export function initYours() {
   initAll();
   getYours(1000);
 }
-

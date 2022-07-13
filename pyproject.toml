@@ -1,6 +1,17 @@
 [tool.black]
 line-length = 100
 target-version = ['py39']
+extend-exclude = '''
+(
+  ^/migrations\/
+)
+'''
+force-exclude = '''
+# Needed for pre-commit
+(
+  ^/migrations\/
+)
+'''
 
 [tool.pytest.ini_options]
 addopts = "-ra --cov"
