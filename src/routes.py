@@ -88,8 +88,8 @@ def translate():
     text = request.json["text"]
     from_lang = request.json["from"]
     to_lang = request.json["to"]
-    translation, error = translate_with_azure(text, from_lang, to_lang)
+    translation, error, source = translate_with_azure(text, from_lang, to_lang)
     if error:
         # TODO: if over quota, try yandex
         return jsonify({"status": "error", "message": error})
-    return jsonify({"status": "success", "text": translation})
+    return jsonify({"status": "success", "text": translation, "source": source})

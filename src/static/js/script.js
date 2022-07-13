@@ -1,8 +1,4 @@
-var randomMessages = [
-  "The massive monster ate 100 hot dogs and then puked orange junk all over his wife.",
-  "To be or not to be, that is the question.",
-  "You may say that I'm a dreamer, But I'm not the only one, I hope someday you'll join us, And the world will be as one."
-];
+import {translate, SOURCES, LANGUAGES} from './googlelang.js';
 
 var currentLang;
 var currentMessage;
@@ -32,7 +28,7 @@ function start(e) {
   // Try to detect non-english language
   var startLanguage = $('#languages option:selected').html();
 
-  var allLangs = Object.keys(yandex.LANGUAGES);
+  var allLangs = Object.keys(LANGUAGES);
   // Remove start language from possible languages
   for (var i = 0; i < allLangs.length; i++) {
     if (allLangs[i] == startLanguage) {
@@ -44,7 +40,7 @@ function start(e) {
   allLangs.sort(function() {
     return (Math.round(Math.random())-0.5);
   });
-  targetLangs = allLangs.slice(0, 12);
+  targetLangs = allLangs.slice(0, 3);
   targetLangs.unshift(startLanguage);
   targetLangs.push(startLanguage);
 
@@ -92,15 +88,16 @@ function translateNextMessage() {
       });
      return;
   }
-  var srcLang = yandex.LANGUAGES[targetLangs[currentLang]];
-  var destLang = yandex.LANGUAGES[targetLangs[currentLang+1]];
-  yandex.translate(currentMessage, srcLang, destLang, function(result) {
-    if (!result.error) {
+  var srcLang = LANGUAGES[targetLangs[currentLang]];
+  var destLang = LANGUAGES[targetLangs[currentLang+1]];
+  translate(currentMessage, srcLang, destLang, function(result) {
+    if (result.status == "success") {
       var translation = {};
       translation.language = targetLangs[currentLang+1];
-      translation.message = result.translation;
+      translation.message = result.text;
+      translation.source = result.source;
       if (translation.message == '') {
-        alert('Woah, crazy! That translated to nothing in ' + translation.language + ' - please try a different, longer message!');
+        alert('Hm, that translated to nothing in ' + translation.language + ' - please try a different, longer message!');
         translation.message = '&nbsp;';
         return;
       }
@@ -109,11 +106,11 @@ function translateNextMessage() {
       window.scroll(0, document.body.offsetHeight);
       currentMessage = translation.message;
       translateNextMessage();
-    } else if (result.error = 501) {
+    } else if (result.status == "error" && result.message == "Language pair not supported") {
       // Language pair not supported
       translateNextMessage();
     } else {
-      alert(result.error);
+      alert(result.message);
     }
   });
 }
@@ -122,26 +119,23 @@ function addTranslation(translation) {
   var div = $('<div class="translation"></div>');
   var language = $('<div class="language"></div>').appendTo(div).html(translation.language);
   var message = $('<div class="message"></div>').appendTo(div).html(translation.message);
-  var poweredUrl = 'https://translate.yandex.com/';
-  var powered = $('<a></a>').appendTo(div).attr('href', poweredUrl).text('Powered by Yandex.Translate');
+  if (translation.source) {
+    var sourceName = SOURCES[translation.source].name;
+    var sourceUrl = SOURCES[translation.source].homepage;
+    $('<a></a>').appendTo(div).attr('href', sourceUrl).text(`Translated by ${sourceName}`);
 
-  if (translation.language != startLanguage) {
-    var translateUrl = poweredUrl + '?lang=' + yandex.LANGUAGES[translation.language] + '-' + yandex.LANGUAGES[startLanguage] + '&text=' + translation.message;
-    var link = $('<a style="padding-left: 4px;" target="_blank" href="' + translateUrl + '">&rarr; Translate to ' + startLanguage + '</a>').appendTo(language).hide();
-    div.mouseover(function() {
-      link.show();
-    });
-    div.mouseout(function() {
-      link.hide();
-    });
+    if (translation.language != startLanguage) {
+      var translateUrl = SOURCES[translation.source].generateUrl(LANGUAGES[translation.language], LANGUAGES[startLanguage], translation.message)
+      var link = $('<a style="padding-left: 4px;" target="_blank" href="' + translateUrl + '">&rarr; Translate to ' + startLanguage + '</a>').appendTo(language).hide();
+      div.mouseover(function() {
+        link.show();
+      });
+      div.mouseout(function() {
+        link.hide();
+      });
+    }
   }
   $('#translations').append(div);
-}
-
-function useRandom() {
-  userGenerated = false;
-  $('#message').val(randomMessages[Math.floor(Math.random()*randomMessages.length)]);
-  start();
 }
 
 function loadRound(id) {
@@ -196,7 +190,6 @@ function getYours(num) {
   if (!supportsStorage) return;
 
   function dateSort(a, b){
-    //Compare "a" and "b" in some fashion, and return -1, 0, or 1
     return (b.date - a.date);
   }
 
@@ -208,7 +201,6 @@ function getYours(num) {
     for (var i = 0; i < Math.min(num, rounds.length); i++) {
       addRound(rounds[i], $('#yours'));
     }
-    $('#yours_section').show();
   }
 }
 
@@ -224,46 +216,6 @@ function supportsStorage() {
 function startOver() {
   $(window).scrollTop(0);
   $('#message').val('').focus();
-}
-
-function showGlobal() {
-  $("#recent_section").show();
-  $("#popular_section").show();
-  $("#global_optin").hide();
-}
-
-function shareTwitter() {
-  var tweetUrl = 'http://www.translation-telephone.com/#4249';
-  var url = 'http://www.twitter.com/share' +
-    '?url=' + tweetUrl.replace('#', '%23');
-    //'&text=Check+out+this+funny+translation';
-  //replace('#', '%23');
-  window.open(url,
-    '_blank', 'resizable=0,scrollbars=0,width=690,height=415');
-}
-
-function shareFacebook() {
-  var url = 'http://www.facebook.com/sharer.php?' +
-    't=Check+out+this+funny+translation';
-  window.open(url,
-    '_blank', 'resizable=0,scrollbars=0,width=690,height=415');
-}
-
-function showOriginal() {
-  window.scroll(0, 0);
-  $('#share_original').hide();
-  $('.translation').each(function(i) {
-    var language = $(this).find('.language').first().text();
-    var message = $(this).find('.message').first().text();
-    var srcLang = yandex.LANGUAGES[language];
-    var destLang = yandex.LANGUAGES[startLanguage];
-    var parent = this;
-    yandex.translate(message, srcLang, destLang, function(result) {
-      if (!result.error) {
-        $(parent).append('<div class="message_original">' + result.translation + '</div>');
-      }
-    });
-  });
 }
 
 function loadFromHash() {
@@ -287,35 +239,44 @@ function initAll() {
   };
 }
 
-function initMain() {
+export function initMain() {
   initAll();
   loadFromHash();
   getYours(3);
 
- $.each(yandex.LANGUAGES, function(name, code) {
-    var option = $('<option>');
-    option.val(code);
-    option.html(name);
-    if (code == 'en') option.attr('selected', 'selected');
-    $('#languages').append(option);
- });
+  $.each(LANGUAGES, function(name, code) {
+     var option = $('<option>');
+     option.val(code);
+     option.html(name);
+     if (code == 'en') option.attr('selected', 'selected');
+     $('#languages').append(option);
+  });
 
-  $('#message').keyup(function() {
+  document.getElementById('message-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    start();
+    return false;
+  });
+  document.getElementById('start-over-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    startOver();
+  });
+  document.getElementById('message').addEventListener('keyup', () => {
    userGenerated = true;
   });
 }
 
-function initRecent() {
+export function initRecent() {
   initAll();
   getRounds('recent', $('#recent'), 30);
 }
 
-function initPopular() {
+export function initPopular() {
   initAll();
   getRounds('popular', $('#popular'), 30);
 }
 
-function initYours() {
+export function initYours() {
   initAll();
   getYours(1000);
 }

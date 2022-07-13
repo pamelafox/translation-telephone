@@ -32,31 +32,32 @@
 <div id="wrapper" class="container_12">
 
     <header id="header" class="grid_12">
-    
+
         <h1><a href="/">Translation Telephone</a></h1>
-    
+
     </header> <!-- end header -->
-    
+
     <div id="content">
 
        {% block content %}{% endblock %}
 
-		<div id="disclaimer">Note: Yandex charges for use of their Translate API past a certain amount of free translations each day.
-That means if lots of people use this, you'll likely start seeing errors. If you enjoy it and want to contribute to its costs, please donate via <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=pamela%2efox%40gmail%2ecom&lc=US&item_name=Pamela%20Fox&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted">PayPal</a>. If you're a developer, you can also clone the code and use your own Yandex API key.
-        </div> 
+		<div id="disclaimer">Note: The Translation APIs used charge past a certain amount of free translations each day, and I can't afford to pay for infinite usage.
+        That means if lots of people use this, you'll likely start seeing errors.
+        If you're a developer, you can also clone the code and use your own API keys.
+        </div>
 
     </div>
 
     <footer id="footer" class="grid_12">
         <p>Made by <a href="http://www.pamelafox.org">Pamela Fox</a> - Fork the code on <a href="https://github.com/pamelafox/translation-telephone/">Github</a>
     </footer>
-    
+
     <div class="clear"></div>
 
-</div> 
+</div>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/googlelang.js') }}"></script> 
-<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script> 
+<script type="module" src="{{ url_for('static', filename='js/googlelang.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% block script %}{% endblock %}
 </body>
 </html>

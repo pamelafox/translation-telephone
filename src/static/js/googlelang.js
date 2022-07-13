@@ -1,6 +1,4 @@
-var yandex = window.yandex || {};
-
-yandex.translate = function (query, srcLang, destLang, callback) {
+export function translate(query, srcLang, destLang, callback) {
   fetch("/translate", {
     method: "POST",
     headers: {
@@ -9,26 +7,30 @@ yandex.translate = function (query, srcLang, destLang, callback) {
     body: JSON.stringify({ text: query, from: srcLang, to: destLang }),
   })
     .then((response) => response.json())
-    .then((data) => {
-      let result = {};
-      if (data.status === "success") {
-        result.translation = data.text;
-      } else {
-        result.error = data.message;
-      }
-      callback(result);
-    })
+    .then(callback)
     .catch(console.error);
+}
+
+export const SOURCES = {
+ "AZURE": {"name": "Azure Cognitive Services Translator",
+           "homepage": "https://docs.microsoft.com/en-us/azure/cognitive-services/translator/",
+           "generateUrl": (src, dest, text) => `https://www.bing.com/translator?text=${text}&from=${src}&to=${dest}`
+  },
+  "YANDEX": {"name": "Yandex.Translate",
+  "homepage": "https://translate.yandex.com/",
+  "generateUrl": (src, dest, text) => `https://translate.yandex.com/?lang=${src}-${dest}&text=${text}`
+
+  }
 };
 
-yandex.LANGUAGES = {
+// Languages supported both by Azure and Yandex APIs
+export const LANGUAGES = {
     "ALBANIAN": "sq",
     "AMHARIC": "am",
     "ARABIC": "ar",
     "ARMENIAN": "hy",
     "AZERBAIJANI": "az",
     "BASQUE": "eu",
-    //"BELARUSIAN": "be",
     "BENGALI": "bn",
     "BULGARIAN": "bg",
     "BURMESE": "my",
@@ -39,7 +41,6 @@ yandex.LANGUAGES = {
     "DANISH": "da",
     "DUTCH": "nl",
     "ENGLISH": "en",
-    //"ESPERANTO": "eo",
     "ESTONIAN": "et",
     "FINNISH": "fi",
     "FRENCH": "fr",
@@ -61,10 +62,8 @@ yandex.LANGUAGES = {
     "KOREAN": "ko",
     "KYRGYZ": "ky",
     "LAOTHIAN": "lo",
-    //"LATIN": "la",
     "LATVIAN": "lv",
     "LITHUANIAN": "lt",
-    //"LUXEMBOURGISH": "lb",
     "MACEDONIAN": "mk",
     "MALAY": "ms",
     "MALAYALAM": "ml",
@@ -80,18 +79,13 @@ yandex.LANGUAGES = {
     "PUNJABI": "pa",
     "ROMANIAN": "ro",
     "RUSSIAN": "ru",
-    //"SCOTS_GAELIC": "gd",
     "SERBIAN": "sr",
-    //"SINHALESE": "si",
     "SLOVAK": "sk",
     "SLOVENIAN": "sl",
     "SPANISH": "es",
-    //"SUNDANESE": "su",
     "SWAHILI": "sw",
     "SWEDISH": "sv",
-    //"TAJIK": "tg",
     "TAMIL": "ta",
-    //"TAGALOG": "tl",
     "TATAR": "tt",
     "TELUGU": "te",
     "THAI": "th",
@@ -101,5 +95,4 @@ yandex.LANGUAGES = {
     "UZBEK": "uz",
     "VIETNAMESE": "vi",
     "WELSH": "cy"
-    //"YIDDISH": "yi"
 };

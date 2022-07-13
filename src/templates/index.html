@@ -1,62 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
     <div id="main" class="grid_8 alpha">
-      <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message to 20 random languages using <a href="https://translate.yandex.com/">Yandex Translate</a> and finally translates it back to the original language. Have fun!
+      <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message to 20 random languages using translation APIs and finally translates it back to the original language. Have fun!
       </p>
-      
+
       <div>
-	    <form onsubmit="start(); return false;">
+	    <form id="message-form">
 	        <label for="message">Enter your message (hint: longer is better) and tell us what language its in:</label><br>
 		    <input id="message" type="text" value="" maxlength="250">
                     <select id="languages"></select>
 	        <button type="submit">Go!</button>
         </form>
       </div>
-      
+
       <div id="branding"></div>
-   
+
       <div id="translations">
       <br><br><br>
       Can't think of anything? Check out the most popular translations on the side ➜
       </div>
-       
+
        <div id="share">
          <p><b>Well, that's how the message turned out! What next?</b></p>
          <p>&#9654; You can share it simply by linking to this URL:<br>
            <input type="text" readonly id="url" size="100"/></p>
-         <p>&#9654; You can <a href="javascript:void(0);" onclick="startOver();">try a new message</a> &mdash; lyrics and quotes work well.</p>
+         <p>&#9654; You can <a id="start-over-link" href="/">try a new message</a> &mdash; lyrics and quotes work well.</p>
        </div>
-    
+
     </div>
-    
+
     <div id="sidebar" class="grid_4 omega">
 
-      <aside id="yours_section" class="widget" style="display:none;">
+      <aside id="" class="widget" style="display:none;">
         <h3>Your Translations:</h3>
- 	<div id="yours"></div>
+ 	      <div id="yours"></div>
         <a href="/yours">See more</a>
       </aside>
-      <aside id="recent_section" class="widget" style="display:none;">
-        <h3>Recent:</h3>
- 	<div id="recent"></div>
-        <a href="/recent">See more</a>
-      </aside>
-      <aside id="popular_section" class="widget" style="display:none;">
-        <h3>Popular:</h3>
- 	<div id="popular"></div>
-        <a href="/popular">See more</a>
-      </aside>
-      <div id="global_optin">Want to see what other people translated?
+      <div>Want to see what other people translated?
         <br>
         Warning: they may be inappropriate!
         <br>
-        <a href="javascript:void(0);" onclick="showGlobal();">Show popular and recent translations</a>
+        Show <a href="/popular">popular</a> and <a href="/recent">recent</a> translations</a>
       </div>
     </div>
 
 {% endblock %}
 {% block script %}
-<script>
+<script type="module">
+import {initMain} from "{{ url_for('static', filename='js/script.js') }}";
 initMain();
 </script>
 {% endblock %}
