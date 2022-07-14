@@ -48,18 +48,26 @@ def test_translate_route_error(client, monkeypatch):
     assert response_json["message"] == "Error"
 
 
-def test_rounds_get_by_id(client, session):
+@pytest.fixture()
+def fake_round(session):
     round = src.models.RoundModel(message="Hi", translations={"es": "Hola"})
     session.add(round)
     session.commit()
-    response = client.get(f"/rounds/{round.id}")
+    return round
+
+
+def test_rounds_get_by_id(client, fake_round):
+    response = client.get(f"/rounds/{fake_round.id}")
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["status"] == "success"
     assert response_json["round"]["id"] == 1
     assert response_json["round"]["message"] == "Hi"
     assert response_json["round"]["translations"] == {"es": "Hola"}
-    assert response_json["round"]["views"] == 2
+    assert response_json["round"]["views"] == 1
+    assert response_json["round"]["funny_count"] == 0
+    assert response_json["round"]["deeep_count"] == 0
+    assert response_json["round"]["flags_count"] == 0
 
 
 def test_rounds_get_by_id_404(client, session):
@@ -99,36 +107,30 @@ def test_rounds_post(client, session):
     assert response_json["round"]["views"] == 1
 
 
-def test_rounds_post_bybot(client, session):
-    round_data = {
-        "translations": [
-            {"language": "ENGLISH", "message": "seize the day!"},
-            {"language": "MONGOLIAN", "message": "тэр өдрийг нь хураан ав!"},
-            {"language": "NORWEGIAN", "message": "plukk opp dagen!"},
-            {"language": "POLISH", "message": "odbierz dzień!"},
-            {"language": "SERBIAN", "message": "Da dobijem dan!"},
-            {"language": "WELSH", "message": "I gael y diwrnod!"},
-            {"language": "PUNJABI", "message": "ਦਿਨ ਬਿਤਾਉਣ ਲਈ!"},
-            {"language": "KAZAKH", "message": "Күнді өткізу үшін!"},
-            {"language": "KOREAN", "message": "하루를 지나치려면!"},
-            {"language": "SPANISH", "message": "¡Para pasar el día!"},
-            {"language": "AMHARIC", "message": "ቀኑን ለማሳለፍ!"},
-            {"language": "GEORGIAN", "message": "დღის გასატარებლად!"},
-            {"language": "LITHUANIAN", "message": "Praleisti dieną!"},
-            {"language": "ENGLISH", "message": "Spend the day!"},
-        ],
-        "usergen": False,
-        "message": "seize the day!",
-        "language": "ENGLISH",
-        "endmessage": "Spend the day!",
-    }
-    response = client.post("/rounds", json=round_data)
+@pytest.mark.parametrize(
+    ["reaction_type", "reaction_field"],
+    [
+        ("funny", "funny_count"),
+        ("deeep", "deeep_count"),
+        ("flags", "flags_count"),
+    ],
+)
+def test_rounds_reaction_post(client, fake_round, reaction_type, reaction_field):
+    route_path = f"/rounds/{fake_round.id}/reaction"
+    response = client.post(route_path, json={"type": reaction_type})
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["status"] == "success"
-    assert response_json["round"]["message"] == round_data["message"]
-    assert response_json["round"]["translations"] == round_data["translations"]
-    assert response_json["round"]["views"] == 1
+    assert response_json["round"][reaction_field] == 1
+
+
+def test_rounds_reaction_badtype(client, fake_round):
+    route_path = f"/rounds/{fake_round.id}/reaction"
+    response = client.post(route_path, json={"type": "hilarious"})
+    assert response.status_code == 200
+    response_json = response.get_json()
+    assert response_json["status"] == "error"
+    assert response_json["message"] == "Reaction type unknown"
 
 
 @pytest.fixture()

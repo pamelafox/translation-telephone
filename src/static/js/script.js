@@ -1,32 +1,32 @@
 import {translate, SOURCES, LANGUAGES} from './translation.js';
+import './translations-footer-element.js';
 
-var currentLang;
-var currentMessage;
-var startLanguage;
-var targetLangs;
-var translations = [];
-var userGenerated = false;
-var ignoreHashChange = false;
-var LS_ROUNDS = 'rounds';
+let currentLang;
+let currentMessage;
+let startLanguage;
+let targetLangs;
+let translations = [];
+let userGenerated = false;
+let ignoreHashChange = false;
+let LS_ROUNDS = 'rounds';
 
 function start(e) {
   e && e.preventDefault();
-
-  if ($('#message').val().length == 0) {
+  currentMessage = document.getElementById('message').value;
+  if (currentMessage.length == 0) {
     alert('Please enter something longer than that.');
     return;
   }
 
   // Set new globals
-  $('#share').hide();
-  $('#translations').empty();
+  document.getElementById('share').innerHTML = '';
+  document.getElementById('translations').innerHTML = '';
   translations = [];
-  currentMessage = $('#message').val();
   currentLang = -1;
   startLanguage = 'ENGLISH';
 
   // Try to detect non-english language
-  var startLanguage = $('#languages option:selected').html();
+  var startLanguage = document.getElementById('languages').value;
 
   var allLangs = Object.keys(LANGUAGES);
   // Remove start language from possible languages
@@ -69,11 +69,8 @@ function translateNextMessage() {
     .then((data) => {
         if (data.status !== 'success') return;
         var id = data.round.id
-        $('#url').val('http://' + window.location.host + '/#' + id);
         ignoreHashChange = true;
         window.location.hash = id;
-        $('#share').show();
-        $('#share_original').show();
         if (supportsStorage()) {
           var rounds = localStorage.getItem('rounds');
           if (rounds) {
@@ -116,26 +113,38 @@ function translateNextMessage() {
 }
 
 function addTranslation(translation) {
-  var div = $('<div class="translation"></div>');
-  var language = $('<div class="language"></div>').appendTo(div).html(translation.language);
-  var message = $('<div class="message"></div>').appendTo(div).html(translation.message);
+  const div = document.createElement('div');
+  div.className = 'translation';
+  const language = document.createElement('div');
+  language.className = 'language';
+  language.innerHTML = translation.language;
+  div.appendChild(language);
+  const message = document.createElement('message');
+  message.innerHTML = translation.message;
+  div.appendChild(message);
+
   if (translation.source) {
     var sourceName = SOURCES[translation.source].name;
     var sourceUrl = SOURCES[translation.source].homepage;
-    $('<a></a>').appendTo(div).attr('href', sourceUrl).text(`Translated by ${sourceName}`);
+    const sourceA = document.createElement('a');
+    sourceA.setAttribute('href', sourceUrl);
+    sourceA.innerText = `Translated by ${sourceName}`;
+    div.appendChild(sourceA);
 
     if (translation.language != startLanguage) {
       var translateUrl = SOURCES[translation.source].generateUrl(LANGUAGES[translation.language], LANGUAGES[startLanguage], translation.message)
-      var link = $('<a style="padding-left: 4px;" target="_blank" href="' + translateUrl + '">&rarr; Translate to ' + startLanguage + '</a>').appendTo(language).hide();
-      div.mouseover(function() {
-        link.show();
-      });
-      div.mouseout(function() {
-        link.hide();
-      });
+      const transA = document.createElement('a');
+      transA.setAttribute('href', translateUrl);
+      transA.setAttribute('target', '_blank')
+      transA.style.paddingLeft = '4px';
+      transA.innerText = `&rarr; Translate to ${startLanguage}`;
+      transA.style.display = 'none';
+      language.appendChild(transA);
+      div.addEventListener('mouseover', () => { transA.style.display = 'block';})
+      div.addEventListener('mouseout', () => { transA.style.display = 'none';})
     }
   }
-  $('#translations').append(div);
+  document.getElementById('translations').appendChild(div);
 }
 
 function loadRound(id) {
@@ -144,26 +153,29 @@ function loadRound(id) {
     .then((data) => {
       if (data.status !== 'success') return;
       const translations = data.round.translations;
-       $('#message').val(translations[0].message);
+       document.getElementById('message').value = translations[0].message
        startLanguage = translations[0].language;
-       $('#share').hide();
-       $('#translations').empty();
+       document.getElementById('translations').innerHTML = '';
        for (var i = 0; i < translations.length; i++) {
          addTranslation(translations[i]);
        }
-       $('#share').show();
-       $('#share_original').show();
-       $('#url').val('http://' + window.location.host + '/#' + id);
+
+       const footer = document.createElement('translations-footer');
+       footer.setAttribute('id', id);
+       footer.addEventListener('start-over', startOver);
+       document.getElementById('translations-footer').innerText = '';
+       document.getElementById('translations-footer').appendChild(footer);
      })
     .catch(console.error);
 }
 
 function addRound(round, parent) {
-  var url = 'http://' + window.location.host + '/#' + round.id;
-  var div = $('<div class="round"></div>');
-  var html = '<a href="' + url + '">' + round.message + '</a>';
+  var url = `http://${window.location.host}/#${round.id}`;
+  const div = document.createElement('div');
+  div.className = 'round';
+  var html = `'<a href="${url}">${round.message}</a>`;
   if (round.views) html += '<div class="views">' + round.views + ' views</div>'
-  div.html(html);
+  div.innerHTML = html;
   div.click(function() {
     loadRound(round.id);
   })
@@ -178,7 +190,6 @@ function getRounds(order, div, num) {
       if (data.status !== 'success') return;
       const rounds = data.rounds;
       for (var i = 0; i < rounds.length; i++) {
-        rounds[i].message = rounds[i].message;
         addRound(rounds[i], div);
       }
     })
@@ -197,10 +208,11 @@ function getYours(num) {
   if (rounds) {
     rounds = JSON.parse(rounds);
     rounds.sort(dateSort);
-    $('#yours').empty();
+    document.getElementById('yours').innerHTML = '';
     for (var i = 0; i < Math.min(num, rounds.length); i++) {
-      addRound(rounds[i], $('#yours'));
+      addRound(rounds[i], document.getElementById('yours'));
     }
+    document.getElementById('#yours-section').style.display = 'block';
   }
 }
 
@@ -214,8 +226,12 @@ function supportsStorage() {
 }
 
 function startOver() {
-  $(window).scrollTop(0);
-  $('#message').val('').focus();
+   window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+  document.getElementById('message').value = '';
+  document.getElementById('message').focus();
 }
 
 function loadFromHash() {
@@ -223,10 +239,7 @@ function loadFromHash() {
   if (!ignoreHashChange) {
      var id = window.location.hash.replace('#', '');
 
-     if (id.indexOf('message=') > -1 ) {
-       $('#message').val(id.split('=')[1]);
-       start();
-     } else if (id.length > 0) {
+     if (id.length > 0) {
        loadRound(id);
      }
    }
@@ -244,22 +257,18 @@ export function initMain() {
   loadFromHash();
   getYours(3);
 
-  $.each(LANGUAGES, function(name, code) {
-     var option = $('<option>');
-     option.val(code);
-     option.html(name);
-     if (code == 'en') option.attr('selected', 'selected');
-     $('#languages').append(option);
+  LANGUAGES.forEach((name, code) => {
+     const option = document.createElement('option');
+     option.value = code;
+     option.innerText = name;
+     if (code == 'en') option.setAttribute('selected', 'selected');
+     document.getElementById('languages').appendChild(option);
   });
 
   document.getElementById('message-form').addEventListener('submit', (e) => {
     e.preventDefault();
     start();
     return false;
-  });
-  document.getElementById('start-over-link').addEventListener('click', (e) => {
-    e.preventDefault();
-    startOver();
   });
   document.getElementById('message').addEventListener('keyup', () => {
    userGenerated = true;
@@ -268,12 +277,12 @@ export function initMain() {
 
 export function initRecent() {
   initAll();
-  getRounds('recent', $('#recent'), 30);
+  getRounds('recent', document.getElementById('recent'), 30);
 }
 
 export function initPopular() {
   initAll();
-  getRounds('popular', $('#popular'), 30);
+  getRounds('popular', document.getElementById('popular'), 30);
 }
 
 export function initYours() {

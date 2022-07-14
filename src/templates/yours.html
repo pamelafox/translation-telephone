@@ -9,7 +9,8 @@
       <p style="margin-top 10px; font-size: smaller">Note: This information is stored only in your browser, and it may not be 100% accurate.</p>
 {% endblock %}
 {% block script %}
-<script>
+<script type="module">
+import {initYours} from "{{ url_for('static', filename='js/script.js') }}";
 initYours();
 </script>
 {% endblock %}

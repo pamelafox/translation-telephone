@@ -9,7 +9,8 @@
 
 {% endblock %}
 {% block script %}
-<script>
+<script type="module">
+import {initPopular} from "{{ url_for('static', filename='js/script.js') }}";
 initPopular();
 </script>
 {% endblock %}

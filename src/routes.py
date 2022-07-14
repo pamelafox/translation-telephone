@@ -34,12 +34,26 @@ def yours():
     return render_template("yours.html")
 
 
+@main.route("/rounds/<round_id>/reaction", methods=["POST"])
+def round_reaction(round_id):
+    round = RoundModel.query.get_or_404(round_id)
+    reaction_type = request.json["type"]
+    if reaction_type == "funny":
+        round.funny_count += 1
+    elif reaction_type == "deeep":
+        round.deeep_count += 1
+    elif reaction_type == "flags":
+        round.flags_count += 1
+    else:
+        return jsonify({"status": "error", "message": "Reaction type unknown"})
+    db.session.add(round)
+    db.session.commit()
+    return jsonify({"status": "success", "round": round.to_dict()})
+
+
 @main.route("/rounds/<round_id>", methods=["GET"])
 def round(round_id):
     round = RoundModel.query.get_or_404(round_id)
-    round.views += 1
-    db.session.add(round)
-    db.session.commit()
     return jsonify({"status": "success", "round": round.to_dict()})
 
 

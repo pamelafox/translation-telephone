@@ -18,6 +18,9 @@ class RoundModel(db.Model):
     translations = db.Column(db.JSON())
     date = db.Column(db.DateTime(timezone=True), server_default=func.now())
     views = db.Column(db.SmallInteger(), default=1)
+    funny_count = db.Column(db.SmallInteger(), default=0)
+    deeep_count = db.Column(db.SmallInteger(), default=0)
+    flags_count = db.Column(db.SmallInteger(), default=0)
     usergen = db.Column(db.Boolean(), default=True)
 
     def to_dict(self):
@@ -26,5 +29,8 @@ class RoundModel(db.Model):
             "message": self.message,
             "translations": self.translations,
             "views": self.views,
+            "funny_count": self.funny_count,
+            "deeep_count": self.deeep_count,
+            "flags_count": self.flags_count,
             "date": self.date,
         }
