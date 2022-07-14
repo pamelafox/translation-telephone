@@ -1,4 +1,6 @@
 node_modules/*
 dist/*
-rollup-config.js
+env/*
+rollup.config.js
 package-lock.json
+.vscode/settings.json
