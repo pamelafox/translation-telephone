@@ -63,7 +63,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: normal; }
 /* End reset */
 
 body {
-	background: #E6B647 url(/img/bg.png) repeat;
+	background-image: linear-gradient(45deg, #e1c893 25%, #e6b647 25%, #e6b647 50%, #e1c893 50%, #e1c893 75%, #e6b647 75%, #e6b647 100%);
+	background-size: 5.66px 5.66px;
 	color: #333333;
 	font: 14px/24px Helvetica, sans-serif;
 }
@@ -127,7 +128,6 @@ li { margin-left: 30px; }
 
 /* Content */
 #content {
-	background: url(/img/content_bg.png) repeat; /* Fallback for browser that doesn't support rgba */
 	background: rgba(204, 204, 204, .4);
 	border: 1px solid #ED6511;
 	border-left: none; border-right: none;

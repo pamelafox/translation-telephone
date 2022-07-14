@@ -40,7 +40,7 @@ function start(e) {
   allLangs.sort(function() {
     return (Math.round(Math.random())-0.5);
   });
-  targetLangs = allLangs.slice(0, 3);
+  targetLangs = allLangs.slice(0, 12);
   targetLangs.unshift(startLanguage);
   targetLangs.push(startLanguage);
 

@@ -4,10 +4,9 @@ import os
 
 
 def translate_with_azure(text, from_lang, to_lang):
-    endpoint = "https://api.cognitive.microsofttranslator.com"
+    url = "https://api.cognitive.microsofttranslator.com/translate"
     location = "westus2"
     path = "/translate"
-    constructed_url = endpoint + path
     params = {"api-version": "3.0", "from": from_lang, "to": to_lang}
     headers = {
         "Ocp-Apim-Subscription-Key": os.environ.get("AZURE_TRANSLATE_API_KEY", "NoKeyFound"),
@@ -17,7 +16,7 @@ def translate_with_azure(text, from_lang, to_lang):
     }
     body = [{"text": text}]
 
-    request = requests.post(constructed_url, params=params, headers=headers, json=body)
+    request = requests.post(url, params=params, headers=headers, json=body)
     response = request.json()
     if (type(response) is dict) and (err := response.get("error", None)):
         return None, err["message"], "AZURE"

@@ -15,11 +15,6 @@ export const SOURCES = {
  "AZURE": {"name": "Azure Cognitive Services Translator",
            "homepage": "https://docs.microsoft.com/en-us/azure/cognitive-services/translator/",
            "generateUrl": (src, dest, text) => `https://www.bing.com/translator?text=${text}&from=${src}&to=${dest}`
-  },
-  "YANDEX": {"name": "Yandex.Translate",
-  "homepage": "https://translate.yandex.com/",
-  "generateUrl": (src, dest, text) => `https://translate.yandex.com/?lang=${src}-${dest}&text=${text}`
-
   }
 };
 
