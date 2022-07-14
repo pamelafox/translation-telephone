@@ -6,7 +6,6 @@ import os
 def translate_with_azure(text, from_lang, to_lang):
     url = "https://api.cognitive.microsofttranslator.com/translate"
     location = "westus2"
-    path = "/translate"
     params = {"api-version": "3.0", "from": from_lang, "to": to_lang}
     headers = {
         "Ocp-Apim-Subscription-Key": os.environ.get("AZURE_TRANSLATE_API_KEY", "NoKeyFound"),
