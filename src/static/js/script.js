@@ -1,5 +1,7 @@
-import { translate, SOURCES, LANGUAGES } from "./translation.js";
+import { translate, LANGUAGES } from "./translation.js";
 import "./translations-footer-element.js";
+import "./message-translation-element.js";
+import "./round-summary-element.js";
 
 let currentLang;
 let currentMessage;
@@ -130,46 +132,12 @@ function translateNextMessage() {
 }
 
 function addTranslation(translation) {
-  const div = document.createElement("div");
-  div.className = "translation";
-  const language = document.createElement("div");
-  language.className = "language";
-  language.innerHTML = translation.language;
-  div.appendChild(language);
-  const message = document.createElement("message");
-  message.innerHTML = translation.message;
-  div.appendChild(message);
-
-  if (translation.source) {
-    var sourceName = SOURCES[translation.source].name;
-    var sourceUrl = SOURCES[translation.source].homepage;
-    const sourceA = document.createElement("a");
-    sourceA.setAttribute("href", sourceUrl);
-    sourceA.innerText = `Translated by ${sourceName}`;
-    div.appendChild(sourceA);
-
-    if (translation.language != startLanguage) {
-      var translateUrl = SOURCES[translation.source].generateUrl(
-        LANGUAGES[translation.language],
-        LANGUAGES[startLanguage],
-        translation.message
-      );
-      const transA = document.createElement("a");
-      transA.setAttribute("href", translateUrl);
-      transA.setAttribute("target", "_blank");
-      transA.style.paddingLeft = "4px";
-      transA.innerText = `&rarr; Translate to ${startLanguage}`;
-      transA.style.display = "none";
-      language.appendChild(transA);
-      div.addEventListener("mouseover", () => {
-        transA.style.display = "block";
-      });
-      div.addEventListener("mouseout", () => {
-        transA.style.display = "none";
-      });
-    }
-  }
-  document.getElementById("translations").appendChild(div);
+  const transEl = document.createElement("message-translation");
+  transEl.setAttribute("translation", translation.message);
+  transEl.setAttribute("language", translation.language);
+  transEl.setAttribute("source", translation.source);
+  transEl.setAttribute("startLanguage", startLanguage);
+  document.getElementById("translations").appendChild(transEl);
 }
 
 function loadRound(id) {
@@ -181,7 +149,7 @@ function loadRound(id) {
       document.getElementById("message").value = translations[0].message;
       startLanguage = translations[0].language;
       document.getElementById("translations").innerHTML = "";
-      for (var i = 0; i < translations.length; i++) {
+      for (var i = 1; i < translations.length; i++) {
         addTranslation(translations[i]);
       }
 
@@ -195,16 +163,14 @@ function loadRound(id) {
 }
 
 function addRound(round, parent) {
-  var url = `http://${window.location.host}/#${round.id}`;
-  const div = document.createElement("div");
-  div.className = "round";
-  var html = `'<a href="${url}">${round.message}</a>`;
-  if (round.views) html += '<div class="views">' + round.views + " views</div>";
-  div.innerHTML = html;
-  div.click(function () {
+  const roundSummaryEl = document.createElement("round-summary");
+  roundSummaryEl.setAttribute("id", round.id);
+  roundSummaryEl.setAttribute("message", round.message);
+  if (round.views) roundSummaryEl.setAttribute("views", round.views);
+  roundSummaryEl.addEventListener("click", () => {
     loadRound(round.id);
   });
-  parent.append(div);
+  parent.append(roundSummaryEl);
 }
 
 function getRounds(order, div, num) {
@@ -235,7 +201,7 @@ function getYours(num) {
     for (var i = 0; i < Math.min(num, rounds.length); i++) {
       addRound(rounds[i], document.getElementById("yours"));
     }
-    document.getElementById("#yours-section").style.display = "block";
+    document.getElementById("yours-section").style.display = "block";
   }
 }
 
@@ -279,7 +245,7 @@ export function initMain() {
   loadFromHash();
   getYours(3);
 
-  LANGUAGES.forEach((name, code) => {
+  Object.entries(LANGUAGES).forEach(([name, code]) => {
     const option = document.createElement("option");
     option.value = code;
     option.innerText = name;

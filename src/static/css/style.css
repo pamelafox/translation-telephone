@@ -191,41 +191,16 @@ button  {
 	border-color: #ED2311;
 }
 
-button:hover {
-}
-
 #message {
   width: 530px;
 }
 
-.translation {
-	margin-bottom: 10px;
-}
-
-.message {
-	background:white;
-	padding: 3px 5px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-}
-
-.language {
-	font-weight: bold;
-}
-
 #share {
-	display: none;
 	padding-top: 5px;
 }
 
 #share p {
   margin-bottom: 10px;
-}
-
-.round {
-  border-bottom: 1px solid #ED6511;
-  line-height: 1.3em;
-  margin-bottom: 5px;
 }
 
 #branding {
@@ -245,22 +220,10 @@ button:hover {
   padding-right: 5px;
 }
 
-#chromepromo {
-  font-size: smaller;
-  padding: 5px;
-  border: 1px solid #ED6511;
-  background: rgba(230, 182, 71, .3);
-}
-
 .message_original {
   background-color: #EEE;
   margin-top: 5px;
 	padding: 3px 5px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
-}
-
-.views {
-  float:right;
-  font-size: 10px;
 }

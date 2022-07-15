@@ -10,7 +10,7 @@
 {% endblock %}
 {% block script %}
 <script type="module">
-import {initRecent} from "{{ url_for('static', filename='js/script.js') }}";
+import {initRecent} from "{{ url_for('static', filename='dist/js/bundle.js') }}";;
 initRecent();
 </script>
 {% endblock %}

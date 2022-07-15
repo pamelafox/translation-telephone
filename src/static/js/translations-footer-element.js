@@ -1,15 +1,9 @@
-import { html, css, LitElement } from "lit";
+import { html, LitElement } from "lit";
 
 const reactionTypes = ["deeep", "funny", "flags"];
 const genLSKey = (id, rType) => `round/${id}/reactions:${rType}`;
 
 export class TranslationsFooter extends LitElement {
-  static styles = css`
-    p {
-      color: blue;
-    }
-  `;
-
   static properties = {
     id: { type: Number },
     _reactions: { type: Array, state: true },

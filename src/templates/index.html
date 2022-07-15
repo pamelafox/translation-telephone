@@ -41,7 +41,7 @@
 {% endblock %}
 {% block script %}
 <script type="module">
-import {initMain} from "{{ url_for('static', filename='js/script.js') }}";
+import {initMain} from "{{ url_for('static', filename='dist/js/bundle.js') }}";
 initMain();
 </script>
 {% endblock %}

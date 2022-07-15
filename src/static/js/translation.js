@@ -13,7 +13,7 @@ export function translate(query, srcLang, destLang, callback) {
 
 export const SOURCES = {
   AZURE: {
-    name: "Azure Cognitive Services Translator",
+    name: "Azure Cognitive Services",
     homepage:
       "https://docs.microsoft.com/en-us/azure/cognitive-services/translator/",
     generateUrl: (src, dest, text) =>

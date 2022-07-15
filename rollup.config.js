@@ -6,10 +6,10 @@ import {terser} from 'rollup-plugin-terser';
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-  input: 'src/main.js',
+  input: 'src/static/js/script.js',
   output: {
-    file: 'dist/bundle.js',
-    format: 'iife',
+    file: 'src/static/dist/js/bundle.js',
+    format: 'es',
     sourcemap: true,
   },
   plugins: [
