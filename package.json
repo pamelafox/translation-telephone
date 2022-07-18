@@ -29,5 +29,10 @@
     "dev": "npm-run-all --parallel start watch",
     "start": "flask run"
   },
-  "pre-commit": [ "pre-pre-commit", "lint", "format", "build" ]
+  "pre-commit": [
+    "pre-pre-commit",
+    "lint",
+    "format",
+    "build"
+  ]
 }
