@@ -140,7 +140,7 @@ def fake_rounds(session):
     )
     r3 = src.models.RoundModel(message="I", translations={"es": "Yo"}, deeep_count=1)
     r4 = src.models.RoundModel(
-        message="you", translations={"es": "tu"}, deeep_count=3, flags_count=1
+        message="you", translations={"es": "tu"}, deeep_count=3, flags_count=2
     )
     session.add(r1)
     session.add(r2)
