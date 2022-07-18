@@ -16,3 +16,14 @@ repos:
     - id: flake8
       exclude: 'migrations/'
       args: ['--config=.flake8']
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.15.0
+    hooks:
+    -   id: eslint
+        files: src\/static\/js\/[^.]+.js
+-   repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.6.2
+    hooks:
+    -   id: prettier
+        files: \.js(on)?
+        args: ['--ignore-path=./.eslintignore', '--write']

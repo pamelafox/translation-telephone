@@ -1,99 +1,30 @@
-function translate(query, srcLang, destLang, callback) {
-  fetch("/translate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text: query, from: srcLang, to: destLang }),
-  })
-    .then((response) => response.json())
-    .then(callback)
-    .catch(console.error);
+const veryLocalStorage = {};
+
+function supportsStorage() {
+  try {
+    return "localStorage" in window && window["localStorage"] !== null;
+  } catch (e) {
+    return false;
+  }
 }
 
-const SOURCES = {
-  AZURE: {
-    name: "Azure Cognitive Services",
-    homepage:
-      "https://docs.microsoft.com/en-us/azure/cognitive-services/translator/",
-    generateUrl: (src, dest, text) =>
-      `https://www.bing.com/translator?text=${text}&from=${src}&to=${dest}`,
-  },
-};
+function get(key, defaultValue) {
+  let value;
+  if (!supportsStorage()) {
+    value = veryLocalStorage[key];
+  } else {
+    value = localStorage.getItem(key);
+  }
+  return value === null || typeof value === "undefined" ? defaultValue : value;
+}
 
-// Languages supported both by Azure and Yandex APIs
-const LANGUAGES = {
-  ALBANIAN: "sq",
-  AMHARIC: "am",
-  ARABIC: "ar",
-  ARMENIAN: "hy",
-  AZERBAIJANI: "az",
-  BASQUE: "eu",
-  BENGALI: "bn",
-  BULGARIAN: "bg",
-  BURMESE: "my",
-  CATALAN: "ca",
-  CHINESE: "zh",
-  CROATIAN: "hr",
-  CZECH: "cs",
-  DANISH: "da",
-  DUTCH: "nl",
-  ENGLISH: "en",
-  ESTONIAN: "et",
-  FINNISH: "fi",
-  FRENCH: "fr",
-  GALICIAN: "gl",
-  GEORGIAN: "ka",
-  GERMAN: "de",
-  GREEK: "el",
-  HAITIAN_CREOLE: "ht",
-  HINDI: "hi",
-  HUNGARIAN: "hu",
-  ICELANDIC: "is",
-  INDONESIAN: "id",
-  IRISH: "ga",
-  ITALIAN: "it",
-  JAPANESE: "ja",
-  KANNADA: "kn",
-  KAZAKH: "kk",
-  KHMER: "km",
-  KOREAN: "ko",
-  KYRGYZ: "ky",
-  LAOTHIAN: "lo",
-  LATVIAN: "lv",
-  LITHUANIAN: "lt",
-  MACEDONIAN: "mk",
-  MALAY: "ms",
-  MALAYALAM: "ml",
-  MALTESE: "mt",
-  MAORI: "mi",
-  MARATHI: "mr",
-  MONGOLIAN: "mn",
-  NEPALI: "ne",
-  NORWEGIAN: "no",
-  PERSIAN: "fa",
-  POLISH: "pl",
-  PORTUGUESE: "pt",
-  PUNJABI: "pa",
-  ROMANIAN: "ro",
-  RUSSIAN: "ru",
-  SERBIAN: "sr",
-  SLOVAK: "sk",
-  SLOVENIAN: "sl",
-  SPANISH: "es",
-  SWAHILI: "sw",
-  SWEDISH: "sv",
-  TAMIL: "ta",
-  TATAR: "tt",
-  TELUGU: "te",
-  THAI: "th",
-  TURKISH: "tr",
-  UKRAINIAN: "uk",
-  URDU: "ur",
-  UZBEK: "uz",
-  VIETNAMESE: "vi",
-  WELSH: "cy",
-};
+function set(key, value) {
+  if (!supportsStorage()) {
+    veryLocalStorage[key] = value;
+  } else {
+    localStorage.setItem(key, value);
+  }
+}
 
 /**
  * @license
@@ -1048,8 +979,328 @@ null == n || n({ LitElement: s });
   : (globalThis.litElementVersions = [])
 ).push("3.2.1");
 
-const reactionTypes = ["deeep", "funny", "flags"];
+const aStyles = r$2`
+    a {
+        color: #C20A0A;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a:visited {
+        color: #9e0101;
+    }
+
+    a:hover {
+        text-shadow: 1px 1px 2px #9C9C9C;
+        text-decoration: none;
+    }
+}`;
+
+const buttonStyles = r$2`
+  button {
+    background: #ed9111;
+    font-size: 20px;
+    cursor: pointer;
+    vertical-align: middle;
+    border-radius: 3px;
+    border-color: #ed2311;
+  }
+`;
+
+const inputStyles = r$2`
+  input[type="text"] {
+    background: white;
+    border: 1px solid #ed6511;
+    padding: 6px 5px;
+    font-size: 1em;
+    font-family: Helvetica, sans-serif;
+    box-shadow: inset -1px 1px 1px rgba(255, 255, 255, 0.65);
+  }
+
+  input[type="text"]:hover,
+  input[type="text"]:focus {
+    text-shadow: 1px 1px 0 #eae7e7;
+  }
+`;
+
+function translate(query, srcLang, destLang, callback) {
+  fetch("/translate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text: query, from: srcLang, to: destLang }),
+  })
+    .then((response) => response.json())
+    .then(callback)
+    .catch(console.error);
+}
+
+function genRandomLanguages(startLanguage) {
+  let allLangs = Object.keys(LANGUAGES);
+  // Remove start language from possible languages
+  for (var i = 0; i < allLangs.length; i++) {
+    if (allLangs[i] == startLanguage) {
+      allLangs.splice(i, 1);
+    }
+  }
+
+  // Pick X random languages
+  allLangs.sort(function () {
+    return Math.round(Math.random()) - 0.5;
+  });
+  let targetLangs = allLangs.slice(0, 12);
+  targetLangs.unshift(startLanguage);
+  targetLangs.push(startLanguage);
+  return targetLangs;
+}
+
+const SOURCES = {
+  AZURE: {
+    name: "Azure Cognitive Services",
+    homepage:
+      "https://docs.microsoft.com/en-us/azure/cognitive-services/translator/",
+    generateUrl: (src, dest, text) =>
+      `https://www.bing.com/translator?text=${text}&from=${src}&to=${dest}`,
+  },
+};
+
+// Languages supported both by Azure and Yandex APIs
+const LANGUAGES = {
+  sq: "ALBANIAN",
+  am: "AMHARIC",
+  ar: "ARABIC",
+  hy: "ARMENIAN",
+  az: "AZERBAIJANI",
+  eu: "BASQUE",
+  bn: "BENGALI",
+  bg: "BULGARIAN",
+  my: "BURMESE",
+  ca: "CATALAN",
+  zh: "CHINESE",
+  hr: "CROATIAN",
+  cs: "CZECH",
+  da: "DANISH",
+  nl: "DUTCH",
+  en: "ENGLISH",
+  et: "ESTONIAN",
+  fi: "FINNISH",
+  fr: "FRENCH",
+  gl: "GALICIAN",
+  ka: "GEORGIAN",
+  de: "GERMAN",
+  el: "GREEK",
+  ht: "HAITIAN_CREOLE",
+  hi: "HINDI",
+  hu: "HUNGARIAN",
+  is: "ICELANDIC",
+  id: "INDONESIAN",
+  ga: "IRISH",
+  it: "ITALIAN",
+  ja: "JAPANESE",
+  kn: "KANNADA",
+  kk: "KAZAKH",
+  km: "KHMER",
+  ko: "KOREAN",
+  ky: "KYRGYZ",
+  lo: "LAOTHIAN",
+  lv: "LATVIAN",
+  lt: "LITHUANIAN",
+  mk: "MACEDONIAN",
+  ms: "MALAY",
+  ml: "MALAYALAM",
+  mt: "MALTESE",
+  mi: "MAORI",
+  mr: "MARATHI",
+  mn: "MONGOLIAN",
+  ne: "NEPALI",
+  no: "NORWEGIAN",
+  fa: "PERSIAN",
+  pl: "POLISH",
+  pt: "PORTUGUESE",
+  pa: "PUNJABI",
+  ro: "ROMANIAN",
+  ru: "RUSSIAN",
+  sr: "SERBIAN",
+  sk: "SLOVAK",
+  sl: "SLOVENIAN",
+  es: "SPANISH",
+  sw: "SWAHILI",
+  sv: "SWEDISH",
+  ta: "TAMIL",
+  tt: "TATAR",
+  te: "TELUGU",
+  th: "THAI",
+  tr: "TURKISH",
+  uk: "UKRAINIAN",
+  ur: "URDU",
+  uz: "UZBEK",
+  vi: "VIETNAMESE",
+  cy: "WELSH",
+};
+
+class TranslationsUI extends s {
+  static styles = [
+    buttonStyles,
+    inputStyles,
+    r$2`
+      input[name="message"] {
+        width: 530px;
+        margin-bottom: 8px;
+      }
+    `,
+  ];
+
+  static properties = {
+    startMessage: { type: String },
+    startLanguage: { type: String },
+    translations: { type: Array },
+    id: { type: Number },
+    _currentMessage: { type: String },
+    _targetLanguages: { type: Array },
+    _currentLanguageIndex: { type: String },
+    _userGenerated: { type: Boolean, default: false },
+  };
+
+  constructor() {
+    super();
+    this.startMessage = "";
+    this.translations = [];
+  }
+
+  render() {
+    const options = Object.entries(LANGUAGES).map(([code, name]) => {
+      return $`<option value=${code} ?selected=${code == "en"}>
+        ${name}
+      </option>`;
+    });
+
+    const msgTranslations = this.translations.map((translation) => {
+      return $`<message-translation
+        translation=${translation.message}
+        language=${translation.message}
+        source=${translation.source}
+        startLanguage=${this.startLanguage}
+      ></message-translation>`;
+    });
+
+    return $`
+         </div>
+             <form @submit=${this.onSubmit} @keyup=${() => {
+      this._userGenerated = true;
+    }}>
+              <label for="message">Enter your message and tell us what language its in:</label>
+              <br>
+              <input type="text" name="message" .value="${
+                this.startMessage
+              }" maxlength="250">
+              <select name="language">${options}</select>
+              <button type="submit">Go!</button>
+          </form>
+
+        <div style="margin-top: 12px">
+            ${msgTranslations}
+        </div>
+
+         <translations-footer id=${this.id} @start-over=${this.startOver}>
+          </translations-footer>
+         </div>
+         `;
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+    this.startMessage = e.target.message.value;
+    if (this.startMessage.length == 0) {
+      alert("Please enter something longer than that.");
+      return;
+    }
+
+    this.startLanguage = e.target.language.value;
+    this.translations = [];
+
+    // Initialize properties needed to track translation progress
+    this._targetLanguages = genRandomLanguages(this.startLanguage);
+    this._currentLanguageIndex = -1;
+    this._currentMessage = this.startMessage;
+
+    // TODO: Make sure first "translation" is saved? Is that even needed?
+    this.translateNextMessage();
+    return false;
+  }
+
+  translateNextMessage() {
+    this._currentLanguageIndex++;
+    if (this._currentLanguageIndex == this._targetLanguages.length - 1) {
+      fetch("/rounds", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          translations: this.translations,
+          usergen: this._userGenerated,
+          message: this.startMessage,
+          language: this.startLanguage,
+          endmessage: this.translations[this.translations.length - 1].message,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status !== "success") return;
+          this.dispatchEvent(
+            new CustomEvent("saved", { detail: { round: data.round } })
+          );
+          this.id = data.round.id;
+        });
+      return;
+    }
+    const srcLang = this._targetLanguages[this._currentLanguageIndex];
+    const destLang = this._targetLanguages[this._currentLanguageIndex + 1];
+    translate(this._currentMessage, srcLang, destLang, (result) => {
+      if (result.status == "success") {
+        const translation = {
+          language: destLang,
+          message: result.text,
+          source: result.source,
+        };
+        if (translation.message === "") {
+          alert(
+            `Hm, that translated to nothing in ${destLang} - please try a different, longer message!`
+          );
+          return;
+        }
+        this.translations = this.translations.concat([translation]);
+        window.scroll(0, document.body.offsetHeight);
+        this._currentMessage = translation.message;
+        this.translateNextMessage();
+      } else if (
+        result.status == "error" &&
+        result.message == "Language pair not supported"
+      ) {
+        this.translateNextMessage();
+      } else {
+        alert(result.message);
+      }
+    });
+  }
+
+  startOver() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    this.startMessage = "";
+    this.translations = [];
+    this.id = null;
+    this.shadowRoot.querySelector("input[name=message]").focus();
+  }
+}
+customElements.define("translations-ui", TranslationsUI);
+
 const genLSKey = (id, rType) => `round/${id}/reactions:${rType}`;
+
+const reactionTypes = ["deeep", "funny", "flags"];
 
 class TranslationsFooter extends s {
   static properties = {
@@ -1057,14 +1308,20 @@ class TranslationsFooter extends s {
     _reactions: { type: Array, state: true },
   };
 
+  static styles = [buttonStyles];
+
   constructor() {
     super();
-    this._reactions = reactionTypes.filter((rType) => {
-      return localStorage.getItem(genLSKey(this.id, rType));
-    });
   }
 
   render() {
+    if (!this.id) return w;
+
+    if (!this.reactions) {
+      this._reactions = reactionTypes.filter((rType) => {
+        return get(genLSKey(this.id, rType));
+      });
+    }
     const url = `http://${window.location.host}/#${this.id}`;
     return $`<div>
       <p>Well, that's how the message turned out! What next?</p>
@@ -1090,13 +1347,21 @@ class TranslationsFooter extends s {
         </button>
       </p>
       <p>▶ Share: <input type="text" readonly="" size="70" value=${url} /></p>
-      <p>▶ <a @click=${this.onStartOverClick}>Try a new message</a></p>
+      <p>▶ <button @click=${
+        this.onStartOverClick
+      }>Try a new message</button></p>
     </div>`;
   }
 
   react(reactionType) {
-    // first ajax
-    localStorage.setItem(genLSKey(this.id, reactionType), new Date().getTime());
+    fetch(`/rounds/${this.id}/reactions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ type: reactionType }),
+    }).catch(console.error);
+    set(genLSKey(this.id, reactionType), new Date().getTime());
     this._reactions = this._reactions.concat([reactionType]);
   }
 
@@ -1124,8 +1389,8 @@ class MessageTranslation extends s {
     }
     .message {
       background: white;
-	  padding: 3px 5px;
-	  border-radius: 3px;
+      padding: 3px 5px;
+      border-radius: 3px;
     }
     .link {
       padding-left: 4px;
@@ -1137,69 +1402,65 @@ class MessageTranslation extends s {
   }
 
   render() {
-    let translateLink;
+    let translateA;
     if (this.language != this.startLanguage) {
-      SOURCES[this.source].generateUrl(
-        LANGUAGES[this.language],
-        LANGUAGES[this.startLanguage],
+      const translateUrl = SOURCES[this.source].generateUrl(
+        this.language,
+        this.startLanguage,
         this.translation
       );
-      this._showTranslateLink
-        ? $`<a class="link" href=${this.showLink} target="_blank">
-            → Translate to ${this.startLanguage}</a>`
+      translateA = this._showTranslateLink
+        ? $`<a class="link" href=${translateUrl} target="_blank">
+            → Translate to ${this.startLanguage}</a
+          >`
         : w;
     }
-    console.log(this.translation);
-    console.log(this.source);
     const sourceName = SOURCES[this.source].name;
     const sourceUrl = SOURCES[this.source].homepage;
-    return $`<div class="translation" @mouseover=${this.showLink} @mouseout=${this.hideLink}>
-         <div class="language">${this.language}${translateLink}</div>
-          <div class="message">${this.translation}</div>
-          <a href="${sourceUrl}">Translated by ${sourceName}</a>
-        </div>`;
+    return $`<div
+      class="translation"
+      @mouseover=${this.showLink}
+      @mouseout=${this.hideLink}
+    >
+      <div class="language">${LANGUAGES[this.language]}${translateA}</div>
+      <div class="message">${this.translation}</div>
+      <a href="${sourceUrl}">Translated by ${sourceName}</a>
+    </div>`;
   }
 }
 
 customElements.define("message-translation", MessageTranslation);
 
-const aStyles = r$2`
-    a {
-        color: #C20A0A;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    a:visited {
-        color: #9e0101;
-    }
-
-    a:hover {
-        text-shadow: 1px 1px 2px #9C9C9C;
-        text-decoration: none;
-    }
-}`;
-
 class RoundSummary extends s {
   static properties = {
     id: { type: Number },
     message: { type: String },
-    views: { type: Number },
+    funnyCount: { type: Number },
+    deeepCount: { type: Number },
+    flagsCount: { type: Number },
+    showFlagButton: { type: Boolean },
+    _viewerFlagged: { type: Boolean, state: true, default: false },
   };
 
   static styles = [
     aStyles,
+    buttonStyles,
     r$2`
-    .round  {
-      border-bottom: 1px solid #ED6511;
-      line-height: 1.3em;
-      margin-bottom: 5px;
+      .round {
+        border-bottom: 1px solid #ed6511;
+        line-height: 1.3em;
+        margin-bottom: 5px;
+        padding: 10px 0px;
       }
       .views {
-  float:right;
-  font-size: 10px;
-}
-  `,
+        float: right;
+        font-size: 10px;
+        margin-right: 8px;
+      }
+      .small-button {
+        font-size: 10px;
+      }
+    `,
   ];
 
   constructor() {
@@ -1207,186 +1468,83 @@ class RoundSummary extends s {
   }
 
   render() {
+    if (this.flagsCount >= 2) return w;
+    this._viewerFlagged = get(genLSKey(this.id, "flags"));
     const url = `http://${window.location.host}/#${this.id}`;
-    const viewsDisplay = this.views
-      ? $`<div class="views">${this.views} views</div>`
+    const funnyDisplay = this.funnyCount
+      ? $`<div class="views">😆 x ${this.funnyCount}</div>`
       : w;
+    const deeepDisplay = this.deeepCount
+      ? $`<div class="views">🤔 x ${this.deeepCount}</div>`
+      : w;
+    const flagButton = this.showFlagButton
+      ? $`<div class="views">
+          <button
+            class="small-button"
+            @click=${this.flag}
+            ?disabled=${this._viewerFlagged}
+          >
+            🚫 Flag
+          </button>
+        </div>`
+      : w;
+
     return $`<div class="round">
-        <a href="${url}">${this.message}
-        ${viewsDisplay}
-        </div>`;
+      <a href="${url}">${this.message}</a>
+      ${flagButton} ${funnyDisplay} ${deeepDisplay}
+    </div>`;
+  }
+
+  flag() {
+    if (
+      window.confirm("Is this message offensive, inappropriate, or hurtful?")
+    ) {
+      fetch(`/rounds/${this.id}/reactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ type: "flags" }),
+      }).catch(console.error);
+      this.flagsCount += 1;
+      this._viewerFlagged = true;
+      set(genLSKey(this.id, "flags"), new Date().getTime());
+    }
   }
 }
 
 customElements.define("round-summary", RoundSummary);
 
-let currentLang;
-let currentMessage;
-let startLanguage;
-let targetLangs;
-let translations = [];
-let userGenerated = false;
 let ignoreHashChange = false;
 let LS_ROUNDS = "rounds";
-
-function start(e) {
-  e && e.preventDefault();
-  currentMessage = document.getElementById("message").value;
-  if (currentMessage.length == 0) {
-    alert("Please enter something longer than that.");
-    return;
-  }
-
-  // Set new globals
-  document.getElementById("share").innerHTML = "";
-  document.getElementById("translations").innerHTML = "";
-  translations = [];
-  currentLang = -1;
-  startLanguage = "ENGLISH";
-
-  // Try to detect non-english language
-  var startLanguage = document.getElementById("languages").value;
-
-  var allLangs = Object.keys(LANGUAGES);
-  // Remove start language from possible languages
-  for (var i = 0; i < allLangs.length; i++) {
-    if (allLangs[i] == startLanguage) {
-      allLangs.splice(i, 1);
-    }
-  }
-
-  // Pick X random languages
-  allLangs.sort(function () {
-    return Math.round(Math.random()) - 0.5;
-  });
-  targetLangs = allLangs.slice(0, 12);
-  targetLangs.unshift(startLanguage);
-  targetLangs.push(startLanguage);
-
-  var translation = {};
-  translation.language = startLanguage;
-  translation.message = currentMessage;
-  translations.push(translation);
-  addTranslation(translation);
-
-  // Start the translation!
-  translateNextMessage();
-}
-
-function translateNextMessage() {
-  currentLang++;
-  if (currentLang == targetLangs.length - 1) {
-    var startMessage = translations[0].message;
-    fetch("/rounds", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        translations: translations,
-        usergen: userGenerated,
-        message: startMessage,
-        language: translations[0].language,
-        endmessage: translations[translations.length - 1].message,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status !== "success") return;
-        var id = data.round.id;
-        ignoreHashChange = true;
-        window.location.hash = id;
-        if (supportsStorage()) {
-          var rounds = localStorage.getItem("rounds");
-          if (rounds) {
-            rounds = JSON.parse(rounds);
-          } else {
-            rounds = [];
-          }
-          rounds.push({
-            id: id,
-            message: startMessage,
-            date: new Date().getTime(),
-          });
-          localStorage.setItem(LS_ROUNDS, JSON.stringify(rounds));
-          getYours(3);
-        }
-      });
-    return;
-  }
-  var srcLang = LANGUAGES[targetLangs[currentLang]];
-  var destLang = LANGUAGES[targetLangs[currentLang + 1]];
-  translate(currentMessage, srcLang, destLang, function (result) {
-    if (result.status == "success") {
-      var translation = {};
-      translation.language = targetLangs[currentLang + 1];
-      translation.message = result.text;
-      translation.source = result.source;
-      if (translation.message == "") {
-        alert(
-          "Hm, that translated to nothing in " +
-            translation.language +
-            " - please try a different, longer message!"
-        );
-        translation.message = "&nbsp;";
-        return;
-      }
-      translations.push(translation);
-      addTranslation(translation);
-      window.scroll(0, document.body.offsetHeight);
-      currentMessage = translation.message;
-      translateNextMessage();
-    } else if (
-      result.status == "error" &&
-      result.message == "Language pair not supported"
-    ) {
-      // Language pair not supported
-      translateNextMessage();
-    } else {
-      alert(result.message);
-    }
-  });
-}
-
-function addTranslation(translation) {
-  const transEl = document.createElement("message-translation");
-  transEl.setAttribute("translation", translation.message);
-  transEl.setAttribute("language", translation.language);
-  transEl.setAttribute("source", translation.source);
-  transEl.setAttribute("startLanguage", startLanguage);
-  document.getElementById("translations").appendChild(transEl);
-}
 
 function loadRound(id) {
   fetch(`/rounds/${id}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.status !== "success") return;
-      const translations = data.round.translations;
-      document.getElementById("message").value = translations[0].message;
-      startLanguage = translations[0].language;
-      document.getElementById("translations").innerHTML = "";
-      for (var i = 1; i < translations.length; i++) {
-        addTranslation(translations[i]);
-      }
 
-      const footer = document.createElement("translations-footer");
-      footer.setAttribute("id", id);
-      footer.addEventListener("start-over", startOver);
-      document.getElementById("translations-footer").innerText = "";
-      document.getElementById("translations-footer").appendChild(footer);
+      const transUI = document.getElementsByTagName("translations-ui")[0];
+      transUI.setAttribute("startMessage", data.round.message);
+      transUI.setAttribute("startLanguage", data.round.language);
+      transUI.setAttribute("id", data.round.id);
+      transUI.setAttribute(
+        "translations",
+        JSON.stringify(data.round.translations)
+      );
     })
     .catch(console.error);
 }
 
-function addRound(round, parent) {
+function addRound(round, parent, showFlagButton) {
   const roundSummaryEl = document.createElement("round-summary");
   roundSummaryEl.setAttribute("id", round.id);
   roundSummaryEl.setAttribute("message", round.message);
-  if (round.views) roundSummaryEl.setAttribute("views", round.views);
-  roundSummaryEl.addEventListener("click", () => {
-    loadRound(round.id);
-  });
+  roundSummaryEl.setAttribute("funnyCount", round.funny_count);
+  roundSummaryEl.setAttribute("deeepCount", round.deeep_count);
+  roundSummaryEl.setAttribute("flagsCount", round.flags_count);
+  if (showFlagButton)
+    roundSummaryEl.setAttribute("showFlagButton", showFlagButton);
   parent.append(roundSummaryEl);
 }
 
@@ -1397,50 +1555,30 @@ function getRounds(order, div, num) {
       if (data.status !== "success") return;
       const rounds = data.rounds;
       for (var i = 0; i < rounds.length; i++) {
-        addRound(rounds[i], div);
+        addRound(rounds[i], div, true);
       }
     })
     .catch(console.error);
 }
 
 function getYours(num) {
-  if (!supportsStorage) return;
-
   function dateSort(a, b) {
     return b.date - a.date;
   }
 
-  var rounds = localStorage.getItem(LS_ROUNDS);
+  var rounds = get(LS_ROUNDS);
   if (rounds) {
     rounds = JSON.parse(rounds);
     rounds.sort(dateSort);
     document.getElementById("yours").innerHTML = "";
     for (var i = 0; i < Math.min(num, rounds.length); i++) {
-      addRound(rounds[i], document.getElementById("yours"));
+      addRound(rounds[i], document.getElementById("yours"), false);
     }
     document.getElementById("yours-section").style.display = "block";
   }
 }
 
-function supportsStorage() {
-  try {
-    return "localStorage" in window && window["localStorage"] !== null;
-  } catch (e) {
-    return false;
-  }
-}
-
-function startOver() {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-  document.getElementById("message").value = "";
-  document.getElementById("message").focus();
-}
-
 function loadFromHash() {
-  // Load round in hash
   if (!ignoreHashChange) {
     var id = window.location.hash.replace("#", "");
 
@@ -1459,25 +1597,25 @@ function initAll() {
 
 function initMain() {
   initAll();
-  loadFromHash();
+
   getYours(3);
 
-  Object.entries(LANGUAGES).forEach(([name, code]) => {
-    const option = document.createElement("option");
-    option.value = code;
-    option.innerText = name;
-    if (code == "en") option.setAttribute("selected", "selected");
-    document.getElementById("languages").appendChild(option);
+  const transUI = document.createElement("translations-ui");
+  transUI.addEventListener("saved", (e) => {
+    const round = e.detail.round;
+    ignoreHashChange = true;
+    window.location.hash = round.id;
+    const rounds = JSON.parse(get("rounds", "[]"));
+    rounds.push({
+      id: round.id,
+      message: round.message,
+      date: new Date().getTime(),
+    });
+    set(LS_ROUNDS, JSON.stringify(rounds));
+    getYours(3);
   });
-
-  document.getElementById("message-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    start();
-    return false;
-  });
-  document.getElementById("message").addEventListener("keyup", () => {
-    userGenerated = true;
-  });
+  document.getElementById("translations-ui").appendChild(transUI);
+  loadFromHash();
 }
 
 function initRecent() {

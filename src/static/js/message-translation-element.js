@@ -36,8 +36,8 @@ export class MessageTranslation extends LitElement {
     let translateA;
     if (this.language != this.startLanguage) {
       const translateUrl = SOURCES[this.source].generateUrl(
-        LANGUAGES[this.language],
-        LANGUAGES[this.startLanguage],
+        this.language,
+        this.startLanguage,
         this.translation
       );
       translateA = this._showTranslateLink
@@ -53,7 +53,7 @@ export class MessageTranslation extends LitElement {
       @mouseover=${this.showLink}
       @mouseout=${this.hideLink}
     >
-      <div class="language">${this.language}${translateA}</div>
+      <div class="language">${LANGUAGES[this.language]}${translateA}</div>
       <div class="message">${this.translation}</div>
       <a href="${sourceUrl}">Translated by ${sourceName}</a>
     </div>`;

@@ -1,5 +1,4 @@
-import random
-
+from sqlalchemy import desc
 from flask import Blueprint, render_template, request, jsonify
 
 from .translations import translate_with_azure
@@ -34,9 +33,13 @@ def yours():
     return render_template("yours.html")
 
 
-@main.route("/rounds/<round_id>/reaction", methods=["POST"])
+@main.route("/rounds/<round_id>/reactions", methods=["POST"])
 def round_reaction(round_id):
     round = RoundModel.query.get_or_404(round_id)
+    print(round)
+    print(round.deeep_count)
+    print(round.funny_count)
+    print(round.flags_count)
     reaction_type = request.json["type"]
     if reaction_type == "funny":
         round.funny_count += 1
@@ -73,28 +76,22 @@ def rounds():
     elif request.method == "GET":
         order = request.args.get("order")
         num = int(request.args.get("num"))
-        if order == "popular" and num < 5:  # Get 5 random popular ones
+        flag_threshold = 2
+        if order == "popular":
             rounds = (
                 RoundModel.query.filter(RoundModel.usergen == True)  # noqa
-                .order_by(RoundModel.views.desc())
-                .limit(30)
-            )
-            rounds = list(rounds)
-            random.shuffle(rounds)
-            rounds = rounds[0:num]
-        elif order == "popular":
-            rounds = (
-                RoundModel.query.filter(RoundModel.usergen == True)  # noqa
-                .order_by(RoundModel.views.desc())
+                .filter(RoundModel.flags_count < flag_threshold)
+                .order_by(desc(RoundModel.deeep_count + RoundModel.funny_count))
                 .limit(num)
             )
         else:
             rounds = (
                 RoundModel.query.filter(RoundModel.usergen == True)  # noqa
+                .filter(RoundModel.flags_count < flag_threshold)
                 .order_by(RoundModel.date.desc())
                 .limit(num)
             )
-        return jsonify({"status": "success", "rounds": [r.to_dict() for r in rounds]})
+        return jsonify({"status": "success", "rounds": [r.to_dict() for r in list(rounds)]})
 
 
 @main.route("/translate", methods=["POST"])

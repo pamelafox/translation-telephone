@@ -163,67 +163,8 @@ li { margin-left: 30px; }
 
 /* Form */
 
-input[type=text],
-input[type=email],
-textarea {
-	background: white;
-	border: 1px solid #ED6511;
-	padding: 6px 5px;
-	font-size: 1em;
-	font-family: Helvetica, sans-serif;
-	-webkit-box-shadow: inset -1px 1px 1px rgba(255, 255, 255, 0.65);
-	-moz-box-shadow: inset -1px 1px 1px rgba(255, 255, 255, 0.65);
-	box-shadow: inset -1px 1px 1px rgba(255, 255, 255, 0.65);
-}
-
-input[type=text]:hover, input[type=text]:focus,
-input[type=email]:hover, input[type=email]:focus,
-textarea:hover, textarea:focus {
-	text-shadow: 1px 1px 0 #eae7e7;
-}
-
-button  {
-	background: #ED9111;
-	font-size: 20px;
-	cursor: pointer;
-	vertical-align: middle;
-	border-radius: 3px;
-	border-color: #ED2311;
-}
-
-#message {
-  width: 530px;
-}
-
-#share {
-	padding-top: 5px;
-}
-
-#share p {
-  margin-bottom: 10px;
-}
-
-#branding {
-  text-align: right;
-  padding-right: 5px;
-}
-
 #disclaimer {
   font-size: 13px;
   clear: both;
   padding-top: 20px;
-}
-
-.translate {
-  float: right;
-  font-size: smaller;
-  padding-right: 5px;
-}
-
-.message_original {
-  background-color: #EEE;
-  margin-top: 5px;
-	padding: 3px 5px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
 }

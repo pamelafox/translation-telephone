@@ -1,5 +1,4 @@
 import datetime
-import random
 
 import pytest
 
@@ -116,7 +115,7 @@ def test_rounds_post(client, session):
     ],
 )
 def test_rounds_reaction_post(client, fake_round, reaction_type, reaction_field):
-    route_path = f"/rounds/{fake_round.id}/reaction"
+    route_path = f"/rounds/{fake_round.id}/reactions"
     response = client.post(route_path, json={"type": reaction_type})
     assert response.status_code == 200
     response_json = response.get_json()
@@ -125,7 +124,7 @@ def test_rounds_reaction_post(client, fake_round, reaction_type, reaction_field)
 
 
 def test_rounds_reaction_badtype(client, fake_round):
-    route_path = f"/rounds/{fake_round.id}/reaction"
+    route_path = f"/rounds/{fake_round.id}/reactions"
     response = client.post(route_path, json={"type": "hilarious"})
     assert response.status_code == 200
     response_json = response.get_json()
@@ -135,19 +134,25 @@ def test_rounds_reaction_badtype(client, fake_round):
 
 @pytest.fixture()
 def fake_rounds(session):
-    r1 = src.models.RoundModel(message="Hi", translations={"es": "Hola"}, views=1)
-    r2 = src.models.RoundModel(message="Bye", translations={"es": "Adios"}, views=5)
-    r3 = src.models.RoundModel(message="I", translations={"es": "Yo"}, views=2)
-    # session.bulk_save_objects([r1, r2, r3])
+    r1 = src.models.RoundModel(message="Hi", translations={"es": "Hola"})
+    r2 = src.models.RoundModel(
+        message="Bye", translations={"es": "Adios"}, deeep_count=1, funny_count=1
+    )
+    r3 = src.models.RoundModel(message="I", translations={"es": "Yo"}, deeep_count=1)
+    r4 = src.models.RoundModel(
+        message="you", translations={"es": "tu"}, deeep_count=3, flags_count=1
+    )
     session.add(r1)
     session.add(r2)
     session.add(r3)
+    session.add(r4)
     session.commit()
-    # Now update their dates so that r3 is the most recent
+    # Now update their dates so that r4 is the most recent
     fake_datetime = datetime.datetime.now()
     r1.date = fake_datetime
     r2.date = fake_datetime + datetime.timedelta(seconds=10)
     r3.date = fake_datetime + datetime.timedelta(seconds=20)
+    r4.date = fake_datetime + datetime.timedelta(seconds=40)
     session.commit()
 
 
@@ -162,21 +167,10 @@ def test_rounds_get_recent(client, session, fake_rounds):
 
 
 def test_rounds_get_popular(client, session, fake_rounds):
-    response = client.get("/rounds?num=10&order=popular")
+    response = client.get("/rounds?num=2&order=popular")
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["status"] == "success"
-    assert len(response_json["rounds"]) == 3
+    assert len(response_json["rounds"]) == 2
     assert response_json["rounds"][0]["message"] == "Bye"
     assert response_json["rounds"][1]["message"] == "I"
-
-
-def test_rounds_get_popular_random(client, session, fake_rounds):
-    random.seed(2)
-    response = client.get("/rounds?num=3&order=popular")
-    assert response.status_code == 200
-    response_json = response.get_json()
-    assert response_json["status"] == "success"
-    assert len(response_json["rounds"]) == 3
-    assert response_json["rounds"][0]["message"] == "I"
-    assert response_json["rounds"][1]["message"] == "Hi"
