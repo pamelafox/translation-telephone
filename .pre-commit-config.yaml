@@ -27,8 +27,3 @@ repos:
     -   id: prettier
         files: \.js(on)?
         args: ['--ignore-path=./.eslintignore', '--write']
--   repo: https://github.com/pamelafox/mirrors-rollup
-    rev: main
-    hooks:
-    -   id: rollup
-        args: ['-c']
