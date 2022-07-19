@@ -25,6 +25,11 @@ def test_html_routes(client, path, title):
     assert f"<title>{title} </title>" in str(response.data)
 
 
+def test_favicon(client):
+    response = client.get("/favicon.ico")
+    assert response.status_code == 200
+
+
 def test_translate_route(client, monkeypatch):
     monkeypatch.delenv("AZURE_TRANSLATE_API_KEY", raising=False)
     monkeypatch.setattr(
