@@ -42,13 +42,9 @@ def yours():
     return render_template("yours.html")
 
 
-@main.route("/rounds/<round_id>/reactions", methods=["POST"])
+@main.route("/api/rounds/<round_id>/reactions", methods=["POST"])
 def round_reaction(round_id):
     round = RoundModel.query.get_or_404(round_id)
-    print(round)
-    print(round.deeep_count)
-    print(round.funny_count)
-    print(round.flags_count)
     reaction_type = request.json["type"]
     if reaction_type == "funny":
         round.funny_count += 1
@@ -63,13 +59,13 @@ def round_reaction(round_id):
     return jsonify({"status": "success", "round": round.to_dict()})
 
 
-@main.route("/rounds/<round_id>", methods=["GET"])
+@main.route("/api/rounds/<round_id>", methods=["GET"])
 def round(round_id):
     round = RoundModel.query.get_or_404(round_id)
     return jsonify({"status": "success", "round": round.to_dict()})
 
 
-@main.route("/rounds", methods=["GET", "POST"])
+@main.route("/api/rounds", methods=["GET", "POST"])
 def rounds():
     if request.method == "POST":
         round = RoundModel()
@@ -103,13 +99,12 @@ def rounds():
         return jsonify({"status": "success", "rounds": [r.to_dict() for r in list(rounds)]})
 
 
-@main.route("/translate", methods=["POST"])
+@main.route("/api/translate", methods=["POST"])
 def translate():
     text = request.json["text"]
     from_lang = request.json["from"]
     to_lang = request.json["to"]
     translation, error, source = translate_with_azure(text, from_lang, to_lang)
     if error:
-        # TODO: if over quota, try yandex
         return jsonify({"status": "error", "message": error})
     return jsonify({"status": "success", "text": translation, "source": source})

@@ -980,7 +980,9 @@ null == n || n({ LitElement: s });
 ).push("3.2.1");
 
 const inputStyles = r$2`
-  input, button, select {
+  input,
+  button,
+  select {
     font-size: 18px;
   }
 
@@ -991,14 +993,15 @@ const inputStyles = r$2`
 
 const censoredStyle = r$2`
   .censored {
-text-rendering: optimizeLegibility;
--webkit-font-variant-ligatures: discretionary-ligatures;
-font-variant-ligatures: discretionary-ligatures;
-font-family: 'scunthorpeSansWeb', sans-serif;
-  }`;
+    text-rendering: optimizeLegibility;
+    -webkit-font-variant-ligatures: discretionary-ligatures;
+    font-variant-ligatures: discretionary-ligatures;
+    font-family: "scunthorpeSansWeb", sans-serif;
+  }
+`;
 
 function translate(query, srcLang, destLang, callback) {
-  fetch("/translate", {
+  fetch("/api/translate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -1193,6 +1196,7 @@ class TranslationsUI extends s {
 
     this.startLanguage = e.target.language.value;
     this.translations = [];
+    this.id = null;
 
     // Initialize properties needed to track translation progress
     this._targetLanguages = genRandomLanguages(this.startLanguage);
@@ -1206,7 +1210,7 @@ class TranslationsUI extends s {
   translateNextMessage() {
     this._currentLanguageIndex++;
     if (this._currentLanguageIndex == this._targetLanguages.length - 1) {
-      fetch("/rounds", {
+      fetch("/api/rounds", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1285,12 +1289,12 @@ class TranslationsFooter extends s {
   static styles = [
     inputStyles,
     r$2`
-  input[type=url] {
-  width: 485px;
-  max-width: 80%;
-  margin-bottom: 8px;
-  }
-  `,
+      input[type="url"] {
+        width: 485px;
+        max-width: 80%;
+        margin-bottom: 8px;
+      }
+    `,
   ];
 
   constructor() {
@@ -1337,7 +1341,7 @@ class TranslationsFooter extends s {
   }
 
   react(reactionType) {
-    fetch(`/rounds/${this.id}/reactions`, {
+    fetch(`/api/rounds/${this.id}/reactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1366,21 +1370,21 @@ class MessageTranslation extends s {
   static styles = [
     censoredStyle,
     r$2`
-    .translation {
-      margin-bottom: 10px;
-    }
-    .language {
-      font-weight: bold;
-    }
-    .message {
-      background: white;
-      padding: 3px 5px;
-      border-radius: 3px;
-    }
-    .link {
-      padding-left: 4px;
-    }
-  `,
+      .translation {
+        margin-bottom: 10px;
+      }
+      .language {
+        font-weight: bold;
+      }
+      .message {
+        background: white;
+        padding: 3px 5px;
+        border-radius: 3px;
+      }
+      .link {
+        padding-left: 4px;
+      }
+    `,
   ];
 
   constructor() {
@@ -1485,7 +1489,7 @@ class RoundSummary extends s {
     if (
       window.confirm("Is this message offensive, inappropriate, or hurtful?")
     ) {
-      fetch(`/rounds/${this.id}/reactions`, {
+      fetch(`/api/rounds/${this.id}/reactions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1505,7 +1509,7 @@ let ignoreHashChange = false;
 let LS_ROUNDS = "rounds";
 
 function loadRound(id) {
-  fetch(`/rounds/${id}`)
+  fetch(`/api/rounds/${id}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.status !== "success") return;
@@ -1535,7 +1539,7 @@ function addRound(round, parent, showFlagButton) {
 }
 
 function getRounds(order, div, num) {
-  fetch(`/rounds?order=${order}&num=${num}`)
+  fetch(`/api/rounds?order=${order}&num=${num}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.status !== "success") return;
@@ -1560,7 +1564,9 @@ function getYours(num) {
     for (var i = 0; i < Math.min(num, rounds.length); i++) {
       addRound(rounds[i], document.getElementById("yours"), false);
     }
-    document.getElementById("yours-section").style.display = "block";
+    if (document.getElementById("yours-section")) {
+      document.getElementById("yours-section").style.display = "block";
+    }
   }
 }
 

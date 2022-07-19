@@ -72,7 +72,7 @@ export class RoundSummary extends LitElement {
     if (
       window.confirm("Is this message offensive, inappropriate, or hurtful?")
     ) {
-      fetch(`/rounds/${this.id}/reactions`, {
+      fetch(`/api/rounds/${this.id}/reactions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

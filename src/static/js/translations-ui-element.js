@@ -83,6 +83,7 @@ export class TranslationsUI extends LitElement {
 
     this.startLanguage = e.target.language.value;
     this.translations = [];
+    this.id = null;
 
     // Initialize properties needed to track translation progress
     this._targetLanguages = genRandomLanguages(this.startLanguage);
@@ -96,7 +97,7 @@ export class TranslationsUI extends LitElement {
   translateNextMessage() {
     this._currentLanguageIndex++;
     if (this._currentLanguageIndex == this._targetLanguages.length - 1) {
-      fetch("/rounds", {
+      fetch("/api/rounds", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

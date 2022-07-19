@@ -1,5 +1,5 @@
 export function translate(query, srcLang, destLang, callback) {
-  fetch("/translate", {
+  fetch("/api/translate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

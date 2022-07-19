@@ -8,7 +8,7 @@ let ignoreHashChange = false;
 let LS_ROUNDS = "rounds";
 
 function loadRound(id) {
-  fetch(`/rounds/${id}`)
+  fetch(`/api/rounds/${id}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.status !== "success") return;
@@ -38,7 +38,7 @@ function addRound(round, parent, showFlagButton) {
 }
 
 function getRounds(order, div, num) {
-  fetch(`/rounds?order=${order}&num=${num}`)
+  fetch(`/api/rounds?order=${order}&num=${num}`)
     .then((response) => response.json())
     .then((data) => {
       if (data.status !== "success") return;
@@ -63,7 +63,9 @@ function getYours(num) {
     for (var i = 0; i < Math.min(num, rounds.length); i++) {
       addRound(rounds[i], document.getElementById("yours"), false);
     }
-    document.getElementById("yours-section").style.display = "block";
+    if (document.getElementById("yours-section")) {
+      document.getElementById("yours-section").style.display = "block";
+    }
   }
 }
 

@@ -67,7 +67,7 @@ export class TranslationsFooter extends LitElement {
   }
 
   react(reactionType) {
-    fetch(`/rounds/${this.id}/reactions`, {
+    fetch(`/api/rounds/${this.id}/reactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -35,7 +35,7 @@ def test_translate_route(client, monkeypatch):
     monkeypatch.setattr(
         src.routes, "translate_with_azure", lambda text, t, f: ("hola", None, "AZURE")
     )
-    response = client.post("/translate", json={"text": "hi", "from": "en", "to": "es"})
+    response = client.post("/api/translate", json={"text": "hi", "from": "en", "to": "es"})
     response_json = response.get_json()
     assert response_json["text"] == "hola"
     assert response_json["status"] == "success"
@@ -46,7 +46,7 @@ def test_translate_route_error(client, monkeypatch):
     monkeypatch.setattr(
         src.routes, "translate_with_azure", lambda text, t, f: (None, "Error", "AZURE")
     )
-    response = client.post("/translate", json={"text": "hi", "from": "en", "to": "esp"})
+    response = client.post("/api/translate", json={"text": "hi", "from": "en", "to": "esp"})
     response_json = response.get_json()
     assert response_json["status"] == "error"
     assert response_json["message"] == "Error"
@@ -61,7 +61,7 @@ def fake_round(session):
 
 
 def test_rounds_get_by_id(client, fake_round):
-    response = client.get(f"/rounds/{fake_round.id}")
+    response = client.get(f"/api/rounds/{fake_round.id}")
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["status"] == "success"
@@ -75,7 +75,7 @@ def test_rounds_get_by_id(client, fake_round):
 
 
 def test_rounds_get_by_id_404(client, session):
-    response = client.get("/rounds/1")
+    response = client.get("/api/rounds/1")
     assert response.status_code == 404
 
 
@@ -102,7 +102,7 @@ def test_rounds_post(client, session):
         "language": "ENGLISH",
         "endmessage": "Spend the day!",
     }
-    response = client.post("/rounds", json=round_data)
+    response = client.post("/api/rounds", json=round_data)
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["status"] == "success"
@@ -120,7 +120,7 @@ def test_rounds_post(client, session):
     ],
 )
 def test_rounds_reaction_post(client, fake_round, reaction_type, reaction_field):
-    route_path = f"/rounds/{fake_round.id}/reactions"
+    route_path = f"/api/rounds/{fake_round.id}/reactions"
     response = client.post(route_path, json={"type": reaction_type})
     assert response.status_code == 200
     response_json = response.get_json()
@@ -129,7 +129,7 @@ def test_rounds_reaction_post(client, fake_round, reaction_type, reaction_field)
 
 
 def test_rounds_reaction_badtype(client, fake_round):
-    route_path = f"/rounds/{fake_round.id}/reactions"
+    route_path = f"/api/rounds/{fake_round.id}/reactions"
     response = client.post(route_path, json={"type": "hilarious"})
     assert response.status_code == 200
     response_json = response.get_json()
@@ -162,7 +162,7 @@ def fake_rounds(session):
 
 
 def test_rounds_get_recent(client, session, fake_rounds):
-    response = client.get("/rounds?num=2&order=recent")
+    response = client.get("/api/rounds?num=2&order=recent")
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["status"] == "success"
@@ -172,7 +172,7 @@ def test_rounds_get_recent(client, session, fake_rounds):
 
 
 def test_rounds_get_popular(client, session, fake_rounds):
-    response = client.get("/rounds?num=2&order=popular")
+    response = client.get("/api/rounds?num=2&order=popular")
     assert response.status_code == 200
     response_json = response.get_json()
     assert response_json["status"] == "success"
