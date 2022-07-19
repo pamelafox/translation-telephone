@@ -1,5 +1,7 @@
+import os
+
 from sqlalchemy import desc
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, send_from_directory
 
 from .translations import translate_with_azure
 from .models import RoundModel
@@ -10,6 +12,13 @@ main = Blueprint("main", __name__, template_folder="templates")
 
 def init_app(app):
     app.register_blueprint(main)
+
+
+@main.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(main.root_path, "static"), "favicon.ico", mimetype="image/vnd.microsoft.icon"
+    )
 
 
 # TODO: Cache-Control headers

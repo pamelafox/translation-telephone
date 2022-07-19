@@ -1,5 +1,5 @@
 import { html, css, nothing, LitElement } from "lit";
-import { aStyles, buttonStyles } from "./shared-styles.js";
+import { inputStyles, censoredStyle } from "./shared-styles.js";
 
 import { genLSKey } from "./shared-logic.js";
 import { get, set } from "./user-store.js";
@@ -16,11 +16,11 @@ export class RoundSummary extends LitElement {
   };
 
   static styles = [
-    aStyles,
-    buttonStyles,
+    inputStyles,
+    censoredStyle,
     css`
       .round {
-        border-bottom: 1px solid #ed6511;
+        border-bottom: 1px solid #ccc;
         line-height: 1.3em;
         margin-bottom: 5px;
         padding: 10px 0px;
@@ -63,7 +63,7 @@ export class RoundSummary extends LitElement {
       : nothing;
 
     return html`<div class="round">
-      <a href="${url}">${this.message}</a>
+      <a href="${url}" class="censored">${this.message}</a>
       ${flagButton} ${funnyDisplay} ${deeepDisplay}
     </div>`;
   }

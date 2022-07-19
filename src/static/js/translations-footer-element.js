@@ -1,6 +1,6 @@
-import { html, LitElement, nothing } from "lit";
+import { html, css, LitElement, nothing } from "lit";
 
-import { buttonStyles } from "./shared-styles.js";
+import { inputStyles } from "./shared-styles.js";
 import { genLSKey } from "./shared-logic.js";
 import { get, set } from "./user-store.js";
 
@@ -12,7 +12,16 @@ export class TranslationsFooter extends LitElement {
     _reactions: { type: Array, state: true },
   };
 
-  static styles = [buttonStyles];
+  static styles = [
+    inputStyles,
+    css`
+      input[type="url"] {
+        width: 485px;
+        max-width: 80%;
+        margin-bottom: 8px;
+      }
+    `,
+  ];
 
   constructor() {
     super();
@@ -50,7 +59,7 @@ export class TranslationsFooter extends LitElement {
           🚫 Offensive
         </button>
       </p>
-      <p>▶ Share: <input type="text" readonly="" size="70" value=${url} /></p>
+      <p>▶ Share: <input type="url" readonly="" value=${url} /></p>
       <p>
         ▶ <button @click=${this.onStartOverClick}>Try a new message</button>
       </p>

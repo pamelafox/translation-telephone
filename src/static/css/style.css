@@ -1,147 +1,79 @@
-/**
- * HTML5 And CSS3 Theme version 1.2
- * By Jayj.dk 2009-2010
- * Download for free at http://jayj.dk/a-free-html5-and-css3-theme/
-
-	Released under New BSD License
-	http://www.opensource.org/licenses/bsd-license.php
-
-	Copyright (c) 2009-2010, Jayj.dk
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification,
-	are permitted provided that the following conditions are met:
-
-		* Redistributions of source code must retain the above copyright notice,
-		  this list of conditions and the following disclaimer.
-
-		* Redistributions in binary form must reproduce the above copyright notice,
-		  this list of conditions and the following disclaimer in the documentation
-		  and/or other materials provided with the distribution.
-
-		* Neither the name of Jayj.dk nor the names of its
-		  contributors may be used to endorse or promote products derived from this
-		  software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-	ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-	ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-*/
-
-/* Reset.css */
-html, body, div, span, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, font, img, q, small, strong, sub, sup, tt, var,
-ol, ul, li, fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	outline: 0;
-	font-size: 100%;
-	vertical-align: baseline;
-	background: transparent;
-}
-ul, ol { list-style: none;}
-img { border: none; }
-:focus { outline: 0; }
-ins { text-decoration: underline; }
-del { text-decoration: line-through; }
-table { border-collapse: collapse; border-spacing: 0; }
-h1, h2, h3, h4, h5, h6 { font-weight: normal; }
-/* End reset */
-
 body {
-	background-image: linear-gradient(45deg, #e1c893 25%, #e6b647 25%, #e6b647 50%, #e1c893 50%, #e1c893 75%, #e6b647 75%, #e6b647 100%);
-	background-size: 5.66px 5.66px;
+	background-image: linear-gradient(45deg, #ca9de3 25%, #e6bceb 25%, #e6bceb 50%, #ca9de3 50%, #ca9de3 75%, #e6bceb 75%, #e6bceb 100%);
+background-size: 5.66px 5.66px;
 	color: #333333;
 	font: 14px/24px Helvetica, sans-serif;
 }
 
-/* HTML5 */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-    display: block;
+.container {
+	max-width: 960px;
+	margin: auto;
+	font-family: sans-serif;
+	line-height: 1.5;
 }
 
-/* Typography and default stuff */
+.content {
+	display: flex;
+	flex-wrap: wrap;
+	margin: auto -1rem 1rem;
+	padding: 15px 10px 5px 10px;
+	background: rgba(255, 255, 255, .9);
+	border: 1px solid #bc65eb;
+	border-left: none; border-right: none;
+  }
 
-a {
-	color: #C20A0A;
-	text-decoration: none;
-	font-weight: bold;
+.col {
+	margin-left: 0.5rem;
+	margin-right: 0.5rem;
 }
 
-a:visited {
-  color: #9e0101;
+.sidebar {
+	flex: 1;
 }
 
-a:hover {
-	text-shadow: 1px 1px 2px #9C9C9C;
-	text-decoration: none;
+.main {
+	flex: 2.5;
 }
 
-p, dl, hr, h1, h2, h3, h4, h5, h6,
-ol, ul, pre, table, fieldset, blockquote, .widget {
-	margin-bottom: 20px;
+.full-width {
+	flex-basis:100%
 }
 
-h1 { font-size: 32px; }
-h2 { font-size: 28px; }
-h3 { font-size: 36px; text-shadow: 1px 1px 2px #ED2311; margin-bottom: 10px; }
-h4 { font-size: 23px; }
-h5 { font-size: 19px; }
-h6 { font-size: 16px; }
+
+
+/* Headers/headings */
 
 #header h1, h2, h3 {
-	font-family: 'Maiden Orange', serif;
+	font-family: 'Akaya Kanadaka', serif;
+	margin-top: 0px;
+    margin-bottom: 0px;
 }
 
-hr { border: 0 solid #ccc; border-top-width: 1px; clear: both; height: 0; }
-ol { list-style: decimal; }
-ul { list-style: disc; }
-li { margin-left: 30px; }
-
-/* Header */
+h3 {
+	font-size: 36px;
+    text-shadow: 1px 1px 2px #116fed;
+}
 
 #header {
   padding-top: 40px;
 }
 
+#header h1 {
+	margin-bottom: -34px;
+}
 #header h1 a {
 	color: black;
 	font-size: 66px;
-	float: left;
-	text-shadow: 1px 1px 2px #ED2311;
+	text-shadow: 1px 1px 2px #116fed;
+	text-decoration: none;
 }
 
-/* Content */
-#content {
-	background: rgba(204, 204, 204, .4);
-	border: 1px solid #ED6511;
-	border-left: none; border-right: none;
-	float: left;
-	width: 940px;
-	padding: 15px 10px 5px 10px;
-}
-
-
-/* Sidebar */
+/* Sidebar widgets */
 
 .widget {
 	overflow: hidden;
 	padding-top: 5px;
+	margin-bottom: 20px;
 }
 
 .widget li {
@@ -149,22 +81,14 @@ li { margin-left: 30px; }
   line-height: 1.3em;
 }
 
-/* Footer */
-#footer {
-	margin: 10px 0 30px 20px;
-}
-
-#footer a {
-	color: #111;
-	padding: 2px 3px;
-}
-
-#footer p { margin: 0; }
-
-/* Form */
+/* Misc */
 
 #disclaimer {
   font-size: 13px;
-  clear: both;
   padding-top: 20px;
+}
+
+#promo {
+	padding: 8px;
+	background: #eee;
 }

@@ -1,5 +1,6 @@
 import { html, css, nothing, LitElement } from "lit";
 
+import { censoredStyle } from "./shared-styles.js";
 import { SOURCES, LANGUAGES } from "./translation.js";
 
 export class MessageTranslation extends LitElement {
@@ -11,22 +12,25 @@ export class MessageTranslation extends LitElement {
     _showTranslateLink: { type: Boolean, state: true, default: false },
   };
 
-  static styles = css`
-    .translation {
-      margin-bottom: 10px;
-    }
-    .language {
-      font-weight: bold;
-    }
-    .message {
-      background: white;
-      padding: 3px 5px;
-      border-radius: 3px;
-    }
-    .link {
-      padding-left: 4px;
-    }
-  `;
+  static styles = [
+    censoredStyle,
+    css`
+      .translation {
+        margin-bottom: 10px;
+      }
+      .language {
+        font-weight: bold;
+      }
+      .message {
+        background: white;
+        padding: 3px 5px;
+        border-radius: 3px;
+      }
+      .link {
+        padding-left: 4px;
+      }
+    `,
+  ];
 
   constructor() {
     super();
@@ -42,7 +46,7 @@ export class MessageTranslation extends LitElement {
       );
       translateA = this._showTranslateLink
         ? html`<a class="link" href=${translateUrl} target="_blank">
-            → Translate to ${this.startLanguage}</a
+            → Translate to ${LANGUAGES[this.startLanguage]}</a
           >`
         : nothing;
     }
@@ -50,11 +54,11 @@ export class MessageTranslation extends LitElement {
     const sourceUrl = SOURCES[this.source].homepage;
     return html`<div
       class="translation"
-      @mouseover=${this.showLink}
-      @mouseout=${this.hideLink}
+      @mouseenter=${() => (this._showTranslateLink = true)}
+      @mouseleave=${() => (this._showTranslateLink = false)}
     >
       <div class="language">${LANGUAGES[this.language]}${translateA}</div>
-      <div class="message">${this.translation}</div>
+      <div class="message censored">${this.translation}</div>
       <a href="${sourceUrl}">Translated by ${sourceName}</a>
     </div>`;
   }

@@ -27,6 +27,7 @@ class RoundModel(db.Model):
         return {
             "id": self.id,
             "message": self.message,
+            "language": self.language,
             "translations": self.translations,
             "views": self.views,
             "funny_count": self.funny_count,

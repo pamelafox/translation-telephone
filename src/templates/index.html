@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <div id="main" class="grid_8 alpha">
+    <div class="main col" >
       <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message to 20 random languages using translation APIs and finally translates it back to the original language. Have fun!
       </p>
 
@@ -9,14 +9,14 @@
 
     </div>
 
-    <div id="sidebar" class="grid_4 omega">
+    <div class="sidebar col">
 
       <aside id="yours-section" class="widget" style="display:none;">
         <h3>Your Translations:</h3>
  	      <div id="yours"></div>
         <a href="/yours">See more</a>
       </aside>
-      <div>Want to see what other people translated?
+      <div id="promo">Want to see what other people translated?
         <br>
         Warning: they may be inappropriate!
         <br>

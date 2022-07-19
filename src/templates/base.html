@@ -10,9 +10,8 @@
     <meta property="og:type" content="website"/>
     <meta property="og:description" content="A fun tool for translating messages through multiple languages and seeing what comes back."/>
     <meta name="description" content="" />
-    <link href="{{ url_for('static', filename='css/960.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
-    <link href="//fonts.googleapis.com/css?family=Maiden+Orange:regular" rel="stylesheet" type="text/css" />
+    <link href="//fonts.googleapis.com/css?family=Akaya+Kanadaka" rel="stylesheet" type="text/css" />
     <style>
 @font-face {
   font-family: 'scunthorpeSansWeb';
@@ -29,28 +28,30 @@
 </head>
 <body>
 
-<div id="wrapper" class="container_12">
+<div class="container">
 
-    <header id="header" class="grid_12">
+    <header id="header">
 
         <h1><a href="/">Translation Telephone</a></h1>
 
-    </header> <!-- end header -->
+    </header>
 
-    <div id="content">
+    <div class="content">
 
        {% block content %}{% endblock %}
 
-		<div id="disclaimer">Note: The Translation APIs used charge past a certain amount of free translations each day, and I can't afford to pay for infinite usage.
+		<div id="disclaimer" class="full-width col">⚠️ The Translation APIs charge past a certain amount of free translations each day, and I can't afford to pay for infinite usage.
         That means if lots of people use this, you'll likely start seeing errors.
         If you're a developer, you can also clone the code and use your own API keys.
         </div>
 
+        <footer id="footer" class="full-width col">
+            <p>Made by <a href="http://www.pamelafox.org">Pamela Fox</a> - Fork the code on <a href="https://github.com/pamelafox/translation-telephone/">Github</a>
+               - Built with Python, Flask, SQLAlchemy, PostGreSQL, Azure App Service, Azure Cognitive Services
+        </footer>
+
     </div>
 
-    <footer id="footer" class="grid_12">
-        <p>Made by <a href="http://www.pamelafox.org">Pamela Fox</a> - Fork the code on <a href="https://github.com/pamelafox/translation-telephone/">Github</a>
-    </footer>
 
     <div class="clear"></div>
 

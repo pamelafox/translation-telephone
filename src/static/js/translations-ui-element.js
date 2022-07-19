@@ -1,15 +1,16 @@
 import { html, css, LitElement } from "lit";
 
-import { buttonStyles, inputStyles } from "./shared-styles.js";
+import { inputStyles, censoredStyle } from "./shared-styles.js";
 import { LANGUAGES, genRandomLanguages, translate } from "./translation.js";
 
 export class TranslationsUI extends LitElement {
   static styles = [
-    buttonStyles,
     inputStyles,
+    censoredStyle,
     css`
       input[name="message"] {
         width: 530px;
+        max-width: 100%;
         margin-bottom: 8px;
       }
     `,
@@ -42,7 +43,7 @@ export class TranslationsUI extends LitElement {
     const msgTranslations = this.translations.map((translation) => {
       return html`<message-translation
         translation=${translation.message}
-        language=${translation.message}
+        language=${translation.language}
         source=${translation.source}
         startLanguage=${this.startLanguage}
       ></message-translation>`;
@@ -55,9 +56,9 @@ export class TranslationsUI extends LitElement {
     }}>
               <label for="message">Enter your message and tell us what language its in:</label>
               <br>
-              <input type="text" name="message" .value="${
+              <input type="text" name="message" class="censored" maxlength="250" .value="${
                 this.startMessage
-              }" maxlength="250">
+              }" >
               <select name="language">${options}</select>
               <button type="submit">Go!</button>
           </form>
@@ -88,7 +89,6 @@ export class TranslationsUI extends LitElement {
     this._currentLanguageIndex = -1;
     this._currentMessage = this.startMessage;
 
-    // TODO: Make sure first "translation" is saved? Is that even needed?
     this.translateNextMessage();
     return false;
   }
