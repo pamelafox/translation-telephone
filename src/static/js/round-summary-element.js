@@ -1,7 +1,7 @@
 import { html, css, nothing, LitElement } from "lit";
 import { inputStyles, censoredStyle } from "./shared-styles.js";
 
-import { genLSKey } from "./shared-logic.js";
+import { genLSKey, genRoundURL } from "./shared-logic.js";
 import { get, set } from "./user-store.js";
 
 export class RoundSummary extends LitElement {
@@ -43,7 +43,6 @@ export class RoundSummary extends LitElement {
   render() {
     if (this.flagsCount >= 2) return nothing;
     this._viewerFlagged = get(genLSKey(this.id, "flags"));
-    const url = `http://${window.location.host}/#${this.id}`;
     const funnyDisplay = this.funnyCount
       ? html`<div class="views">😆 x ${this.funnyCount}</div>`
       : nothing;
@@ -63,7 +62,7 @@ export class RoundSummary extends LitElement {
       : nothing;
 
     return html`<div class="round">
-      <a href="${url}" class="censored">${this.message}</a>
+      <a href="${genRoundURL(this.id)}" class="censored">${this.message}</a>
       ${flagButton} ${funnyDisplay} ${deeepDisplay}
     </div>`;
   }

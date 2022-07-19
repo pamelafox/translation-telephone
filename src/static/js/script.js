@@ -1,10 +1,11 @@
 import { get, set } from "./user-store.js";
+import { genRoundPath } from "./shared-logic.js";
+
 import "./translations-ui-element.js";
 import "./translations-footer-element.js";
 import "./message-translation-element.js";
 import "./round-summary-element.js";
 
-let ignoreHashChange = false;
 let LS_ROUNDS = "rounds";
 
 function loadRound(id) {
@@ -69,33 +70,14 @@ function getYours(num) {
   }
 }
 
-function loadFromHash() {
-  if (!ignoreHashChange) {
-    var id = window.location.hash.replace("#", "");
-
-    if (id.length > 0) {
-      loadRound(id);
-    }
-  }
-  ignoreHashChange = false;
-}
-
-function initAll() {
-  window.onhashchange = function () {
-    loadFromHash();
-  };
-}
-
-export function initMain() {
-  initAll();
-
+export function initMain(id) {
   getYours(3);
 
   const transUI = document.createElement("translations-ui");
   transUI.addEventListener("saved", (e) => {
     const round = e.detail.round;
-    ignoreHashChange = true;
-    window.location.hash = round.id;
+    window.history.pushState({}, "", genRoundPath(round.id));
+
     const rounds = JSON.parse(get("rounds", "[]"));
     rounds.push({
       id: round.id,
@@ -106,20 +88,17 @@ export function initMain() {
     getYours(3);
   });
   document.getElementById("translations-ui").appendChild(transUI);
-  loadFromHash();
+  if (id) loadRound(id);
 }
 
 export function initRecent() {
-  initAll();
   getRounds("recent", document.getElementById("recent"), 30);
 }
 
 export function initPopular() {
-  initAll();
   getRounds("popular", document.getElementById("popular"), 30);
 }
 
 export function initYours() {
-  initAll();
   getYours(1000);
 }

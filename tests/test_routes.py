@@ -25,6 +25,12 @@ def test_html_routes(client, path, title):
     assert f"<title>{title} </title>" in str(response.data)
 
 
+def test_round_page(client):
+    response = client.get("/rounds/1")
+    assert response.status_code == 200
+    assert "initMain(1)" in str(response.data)
+
+
 def test_favicon(client):
     response = client.get("/favicon.ico")
     assert response.status_code == 200

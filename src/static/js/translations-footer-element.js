@@ -1,7 +1,7 @@
 import { html, css, LitElement, nothing } from "lit";
 
 import { inputStyles } from "./shared-styles.js";
-import { genLSKey } from "./shared-logic.js";
+import { genLSKey, genRoundURL } from "./shared-logic.js";
 import { get, set } from "./user-store.js";
 
 const reactionTypes = ["deeep", "funny", "flags"];
@@ -35,7 +35,6 @@ export class TranslationsFooter extends LitElement {
         return get(genLSKey(this.id, rType));
       });
     }
-    const url = `http://${window.location.host}/#${this.id}`;
     return html`<div>
       <p>Well, that's how the message turned out! What next?</p>
       <p>
@@ -59,7 +58,9 @@ export class TranslationsFooter extends LitElement {
           🚫 Offensive
         </button>
       </p>
-      <p>▶ Share: <input type="url" readonly="" value=${url} /></p>
+      <p>
+        ▶ Share: <input type="url" readonly="" value=${genRoundURL(this.id)} />
+      </p>
       <p>
         ▶ <button @click=${this.onStartOverClick}>Try a new message</button>
       </p>

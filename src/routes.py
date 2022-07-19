@@ -27,6 +27,11 @@ def homepage():
     return render_template("index.html")
 
 
+@main.route("/rounds/<round_id>")
+def round(round_id):
+    return render_template("index.html", id=round_id)
+
+
 @main.route("/recent")
 def recent():
     return render_template("recent.html")
@@ -60,13 +65,13 @@ def round_reaction(round_id):
 
 
 @main.route("/api/rounds/<round_id>", methods=["GET"])
-def round(round_id):
+def api_round(round_id):
     round = RoundModel.query.get_or_404(round_id)
     return jsonify({"status": "success", "round": round.to_dict()})
 
 
 @main.route("/api/rounds", methods=["GET", "POST"])
-def rounds():
+def api_rounds():
     if request.method == "POST":
         round = RoundModel()
         round.translations = request.json["translations"]
@@ -100,7 +105,7 @@ def rounds():
 
 
 @main.route("/api/translate", methods=["POST"])
-def translate():
+def api_translate():
     text = request.json["text"]
     from_lang = request.json["from"]
     to_lang = request.json["to"]

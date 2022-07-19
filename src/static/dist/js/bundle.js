@@ -26,6 +26,12 @@ function set(key, value) {
   }
 }
 
+const genLSKey = (id, rType) => `round/${id}/reactions:${rType}`;
+
+const genRoundPath = (id) => `rounds/${id}`;
+const genRoundURL = (id) =>
+  `http://${window.location.host}/${genRoundPath(id)}`;
+
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -1276,8 +1282,6 @@ class TranslationsUI extends s {
 }
 customElements.define("translations-ui", TranslationsUI);
 
-const genLSKey = (id, rType) => `round/${id}/reactions:${rType}`;
-
 const reactionTypes = ["deeep", "funny", "flags"];
 
 class TranslationsFooter extends s {
@@ -1309,7 +1313,6 @@ class TranslationsFooter extends s {
         return get(genLSKey(this.id, rType));
       });
     }
-    const url = `http://${window.location.host}/#${this.id}`;
     return $`<div>
       <p>Well, that's how the message turned out! What next?</p>
       <p>
@@ -1333,7 +1336,9 @@ class TranslationsFooter extends s {
           🚫 Offensive
         </button>
       </p>
-      <p>▶ Share: <input type="url" readonly="" value=${url} /></p>
+      <p>▶ Share: <input type="url" readonly="" value=${genRoundURL(
+        this.id
+      )} /></p>
       <p>
         ▶ <button @click=${this.onStartOverClick}>Try a new message</button>
       </p>
@@ -1460,7 +1465,6 @@ class RoundSummary extends s {
   render() {
     if (this.flagsCount >= 2) return w;
     this._viewerFlagged = get(genLSKey(this.id, "flags"));
-    const url = `http://${window.location.host}/#${this.id}`;
     const funnyDisplay = this.funnyCount
       ? $`<div class="views">😆 x ${this.funnyCount}</div>`
       : w;
@@ -1480,7 +1484,7 @@ class RoundSummary extends s {
       : w;
 
     return $`<div class="round">
-      <a href="${url}" class="censored">${this.message}</a>
+      <a href="${genRoundURL(this.id)}" class="censored">${this.message}</a>
       ${flagButton} ${funnyDisplay} ${deeepDisplay}
     </div>`;
   }
@@ -1505,7 +1509,6 @@ class RoundSummary extends s {
 
 customElements.define("round-summary", RoundSummary);
 
-let ignoreHashChange = false;
 let LS_ROUNDS = "rounds";
 
 function loadRound(id) {
@@ -1570,33 +1573,14 @@ function getYours(num) {
   }
 }
 
-function loadFromHash() {
-  if (!ignoreHashChange) {
-    var id = window.location.hash.replace("#", "");
-
-    if (id.length > 0) {
-      loadRound(id);
-    }
-  }
-  ignoreHashChange = false;
-}
-
-function initAll() {
-  window.onhashchange = function () {
-    loadFromHash();
-  };
-}
-
-function initMain() {
-  initAll();
-
+function initMain(id) {
   getYours(3);
 
   const transUI = document.createElement("translations-ui");
   transUI.addEventListener("saved", (e) => {
     const round = e.detail.round;
-    ignoreHashChange = true;
-    window.location.hash = round.id;
+    window.history.pushState({}, "", genRoundPath(round.id));
+
     const rounds = JSON.parse(get("rounds", "[]"));
     rounds.push({
       id: round.id,
@@ -1607,21 +1591,18 @@ function initMain() {
     getYours(3);
   });
   document.getElementById("translations-ui").appendChild(transUI);
-  loadFromHash();
+  if (id) loadRound(id);
 }
 
 function initRecent() {
-  initAll();
   getRounds("recent", document.getElementById("recent"), 30);
 }
 
 function initPopular() {
-  initAll();
   getRounds("popular", document.getElementById("popular"), 30);
 }
 
 function initYours() {
-  initAll();
   getYours(1000);
 }
 

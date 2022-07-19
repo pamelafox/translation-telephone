@@ -28,6 +28,6 @@
 {% block script %}
 <script type="module">
 import {initMain} from "{{ url_for('static', filename='dist/js/bundle.js') }}";
-initMain();
+initMain({% if id is defined %}{{id}}{% endif %});
 </script>
 {% endblock %}
