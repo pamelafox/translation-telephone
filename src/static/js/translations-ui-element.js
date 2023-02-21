@@ -1,7 +1,7 @@
 import { html, css, LitElement } from "lit";
 
 import { inputStyles, censoredStyle } from "./shared-styles.js";
-import { LANGUAGES, genRandomLanguages, translate } from "./translation.js";
+import { genRandomLanguages, translate } from "./translation.js";
 
 export class TranslationsUI extends LitElement {
   static styles = [
@@ -17,6 +17,7 @@ export class TranslationsUI extends LitElement {
   ];
 
   static properties = {
+    messageOptions: { type: Array, default: [] },
     startMessage: { type: String },
     startLanguage: { type: String },
     translations: { type: Array },
@@ -34,12 +35,6 @@ export class TranslationsUI extends LitElement {
   }
 
   render() {
-    const options = Object.entries(LANGUAGES).map(([code, name]) => {
-      return html`<option value=${code} ?selected=${code == "en"}>
-        ${name}
-      </option>`;
-    });
-
     const msgTranslations = this.translations.map((translation) => {
       return html`<message-translation
         translation=${translation.message}
@@ -49,17 +44,23 @@ export class TranslationsUI extends LitElement {
       ></message-translation>`;
     });
 
+    const msgOptions = this.messageOptions.map((messageOption) => {
+      return html`<option>${messageOption}</option>`;
+    });
+
     return html`
          </div>
              <form @submit=${this.onSubmit} @keyup=${() => {
       this._userGenerated = true;
     }}>
-              <label for="message">Enter your message and tell us what language its in:</label>
+              <label for="message">Select a phrase (type a word to find matches):</label>
               <br>
-              <input type="text" name="message" class="censored" maxlength="250" .value="${
+              <input name="message" list="message-options" placeholder="Start typing..." .value="${
                 this.startMessage
-              }" >
-              <select name="language">${options}</select>
+              }">
+              <datalist id="message-options">
+                ${msgOptions}
+              </datalist>
               <button type="submit">Go!</button>
           </form>
 
@@ -81,7 +82,7 @@ export class TranslationsUI extends LitElement {
       return;
     }
 
-    this.startLanguage = e.target.language.value;
+    this.startLanguage = "en";
     this.translations = [];
     this.id = null;
 

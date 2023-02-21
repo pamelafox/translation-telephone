@@ -10,12 +10,10 @@ repos:
     hooks:
     -   id: black
         args: ['--config=./pyproject.toml']
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 4.0.1
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.237
     hooks:
-    - id: flake8
-      exclude: 'migrations/'
-      args: ['--config=.flake8']
+    -   id: ruff
 -   repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.15.0
     hooks:

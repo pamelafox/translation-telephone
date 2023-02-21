@@ -25,6 +25,6 @@
     "build": "rollup -c",
     "watch": "rollup -c -w",
     "dev": "npm-run-all --parallel start watch",
-    "start": "flask run"
+    "start": "flask --debug run"
   }
 }

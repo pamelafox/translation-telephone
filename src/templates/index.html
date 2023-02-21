@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="main col" >
-      <p>Ever played the <a href="http://en.wikipedia.org/wiki/Chinese_whispers">"Telephone" game</a>, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message to 20 random languages using translation APIs and finally translates it back to the original language. Have fun!
+      <p>Ever played the "Telephone" game, where you send a message around a circle of people &amp; see how it turns out? This is an online version which translates the message to 20 random languages using translation APIs and finally translates it back to the original language. Have fun!
       </p>
 
       <div id="translations-ui">
@@ -28,6 +28,6 @@
 {% block script %}
 <script type="module">
 import {initMain} from "{{ url_for('static', filename='dist/js/bundle.js') }}";
-initMain({% if id is defined %}{{id}}{% endif %});
+initMain({{ options | tojson }}, {% if id is defined %}{{id}}{% endif %});
 </script>
 {% endblock %}

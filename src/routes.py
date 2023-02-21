@@ -1,11 +1,11 @@
 import os
 
+from flask import Blueprint, jsonify, render_template, request, send_from_directory
 from sqlalchemy import desc
-from flask import Blueprint, render_template, request, jsonify, send_from_directory
 
-from .translations import translate_with_azure
-from .models import RoundModel
 from .database import db
+from .models import RoundModel
+from .translations import translate_with_azure
 
 main = Blueprint("main", __name__, template_folder="templates")
 
@@ -24,7 +24,9 @@ def favicon():
 # TODO: Cache-Control headers
 @main.route("/")
 def homepage():
-    return render_template("index.html")
+    with open("src/sayings.txt") as f:
+        sayings = f.readlines()
+    return render_template("index.html", options=sayings)
 
 
 @main.route("/rounds/<round_id>")
