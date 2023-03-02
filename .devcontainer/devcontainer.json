@@ -8,6 +8,7 @@
 
   "features": {
     // See https://github.com/devcontainers/features/tree/main/src
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/node:1": {}
   },
