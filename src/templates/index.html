@@ -28,6 +28,7 @@
 {% block script %}
 <script type="module">
 import {initMain} from "{{ url_for('static', filename='dist/js/bundle.js') }}";
-initMain({{ options | tojson }}, {% if id is defined %}{{id}}{% endif %});
+const messageOptions = {{ options | tojson }};
+initMain(messageOptions, {% if id is defined %}{{id}}{% endif %});
 </script>
 {% endblock %}

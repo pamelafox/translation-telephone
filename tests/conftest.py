@@ -1,5 +1,7 @@
 import os
+
 import pytest
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 from src import create_app
 from src.database import db as _db
@@ -11,7 +13,7 @@ def app(request):
     config_override = {
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": os.environ.get(
-            "TEST_DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/transtel"
+            "TEST_DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres"
         ),
     }
     app = create_app(config_override)
@@ -47,15 +49,12 @@ def session(db, request):
     connection = db.engine.connect()
     transaction = connection.begin()
 
-    options = dict(bind=connection, binds={})
-    session = db.create_scoped_session(options=options)
-
-    db.session = session
+    db.session = scoped_session(session_factory=sessionmaker(bind=connection))
 
     def teardown():
         transaction.rollback()
         connection.close()
-        session.remove()
+        db.session.remove()
 
     request.addfinalizer(teardown)
-    return session
+    return db.session

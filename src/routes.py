@@ -31,7 +31,9 @@ def homepage():
 
 @main.route("/rounds/<round_id>")
 def round(round_id):
-    return render_template("index.html", id=round_id)
+    with open("src/sayings.txt") as f:
+        sayings = f.readlines()
+    return render_template("index.html", id=round_id, options=sayings)
 
 
 @main.route("/recent")
