@@ -28,7 +28,7 @@ def test_html_routes(client, path, title):
 def test_round_page(client):
     response = client.get("/rounds/1")
     assert response.status_code == 200
-    assert "initMain(1)" in str(response.data)
+    assert "initMain(messageOptions, 1)" in str(response.data)
 
 
 def test_favicon(client):

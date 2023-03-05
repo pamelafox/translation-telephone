@@ -1136,6 +1136,7 @@ class TranslationsUI extends s {
   ];
 
   static properties = {
+    messageOptions: { type: Array, default: [] },
     startMessage: { type: String },
     startLanguage: { type: String },
     translations: { type: Array },
@@ -1153,12 +1154,6 @@ class TranslationsUI extends s {
   }
 
   render() {
-    const options = Object.entries(LANGUAGES).map(([code, name]) => {
-      return $`<option value=${code} ?selected=${code == "en"}>
-        ${name}
-      </option>`;
-    });
-
     const msgTranslations = this.translations.map((translation) => {
       return $`<message-translation
         translation=${translation.message}
@@ -1168,17 +1163,23 @@ class TranslationsUI extends s {
       ></message-translation>`;
     });
 
+    const msgOptions = this.messageOptions.map((messageOption) => {
+      return $`<option>${messageOption}</option>`;
+    });
+
     return $`
          </div>
              <form @submit=${this.onSubmit} @keyup=${() => {
       this._userGenerated = true;
     }}>
-              <label for="message">Enter your message and tell us what language its in:</label>
+              <label for="message">Select a phrase (type a word to find matches):</label>
               <br>
-              <input type="text" name="message" class="censored" maxlength="250" .value="${
+              <input name="message" list="message-options" placeholder="Start typing..." .value="${
                 this.startMessage
-              }" >
-              <select name="language">${options}</select>
+              }">
+              <datalist id="message-options">
+                ${msgOptions}
+              </datalist>
               <button type="submit">Go!</button>
           </form>
 
@@ -1200,7 +1201,7 @@ class TranslationsUI extends s {
       return;
     }
 
-    this.startLanguage = e.target.language.value;
+    this.startLanguage = "en";
     this.translations = [];
     this.id = null;
 
@@ -1336,9 +1337,9 @@ class TranslationsFooter extends s {
           🚫 Offensive
         </button>
       </p>
-      <p>▶ Share: <input type="url" readonly="" value=${genRoundURL(
-        this.id
-      )} /></p>
+      <p>
+        ▶ Share: <input type="url" readonly="" value=${genRoundURL(this.id)} />
+      </p>
       <p>
         ▶ <button @click=${this.onStartOverClick}>Try a new message</button>
       </p>
@@ -1573,10 +1574,11 @@ function getYours(num) {
   }
 }
 
-function initMain(id) {
+function initMain(messageOptions, id) {
   getYours(3);
 
   const transUI = document.createElement("translations-ui");
+  transUI.setAttribute("messageOptions", JSON.stringify(messageOptions));
   transUI.addEventListener("saved", (e) => {
     const round = e.detail.round;
     window.history.pushState({}, "", genRoundPath(round.id));

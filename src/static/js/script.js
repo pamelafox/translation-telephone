@@ -70,10 +70,11 @@ function getYours(num) {
   }
 }
 
-export function initMain(id) {
+export function initMain(messageOptions, id) {
   getYours(3);
 
   const transUI = document.createElement("translations-ui");
+  transUI.setAttribute("messageOptions", JSON.stringify(messageOptions));
   transUI.addEventListener("saved", (e) => {
     const round = e.detail.round;
     window.history.pushState({}, "", genRoundPath(round.id));

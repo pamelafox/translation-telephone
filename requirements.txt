@@ -1,5 +1,5 @@
-Flask==2.1.0
+Flask
 requests
-psycopg2==2.8.4
-Flask-SQLAlchemy===2.5.1
-Flask-Migrate==2.5.2
+psycopg2
+Flask-SQLAlchemy
+Flask-Migrate

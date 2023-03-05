@@ -1,3 +1,8 @@
+[tool.ruff]
+select = ["E", "F", "I", "UP"]
+target-version = "py311"
+line-length = 120
+
 [tool.black]
 line-length = 100
 target-version = ['py39']

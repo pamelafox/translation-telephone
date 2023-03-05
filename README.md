@@ -17,6 +17,18 @@ Technologies used:
 
 ## Local development
 
+Install the dependencies:
+
+```python3 -m pip install -r requirements-dev.txt```
+
+```pre-commit install```
+
+```npm install```
+
+Setup the database:
+
+  ```flask db upgrade```
+
 To run the server:
 
 ```npm run dev```
