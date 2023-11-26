@@ -80,7 +80,7 @@ To deploy your own instance, follow these steps:
     azd deploy
     ```
 
-Alternatively, follow the [tutorial for Flask app + PostGreSQL deployment](https://docs.microsoft.com/en-us/azure/app-service/tutorial-python-postgresql-app) but using this app instead of the sample app.
+Alternatively, follow the [tutorial for Flask app + PostGreSQL deployment](https://docs.microsoft.com/azure/app-service/tutorial-python-postgresql-app) but using this app instead of the sample app.
 
 Make sure you specify the following environment variables in the App Service configuration:
 
