@@ -26,10 +26,31 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
+// Store secrets in a keyvault
+module keyVault './core/security/keyvault.bicep' = {
+  name: 'keyvault'
+  scope: resourceGroup
+  params: {
+    name: '${take(replace(prefix, '-', ''), 17)}-vault'
+    location: location
+    tags: tags
+    principalId: principalId
+  }
+}
+
+module keyVaultSecret './core/security/keyvault-secret.bicep' = {
+  name: 'keyvault-secret'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVault.outputs.name
+    name: 'postgresAdminPassword'
+    secretValue: postgresAdminPassword
+  }
+}
+
 var postgresServerName = '${prefix}-postgres'
 var postgresServerAdmin = 'admin${uniqueString(resourceGroup.id)}'
 var postgresDatabaseName = 'transtel'
-var cognitiveServiceName = '${prefix}-cognitiveservice'
 
 
 module postgresServer 'core/database/postgresql/flexibleserver.bicep' = {
@@ -58,9 +79,8 @@ module cognitiveService 'core/ai/cognitiveservices.bicep' = {
   name: 'cognitiveservice'
   scope: resourceGroup
   params: {
-    name: cognitiveServiceName
+    name: '${prefix}-cognitiveservice'
     location: location
-    tags: union(tags, { 'azd-service-name': 'cognitive' })
     sku:  'S1'
     kind: 'TextTranslation'
     publicNetworkAccess: 'Enabled'
@@ -73,7 +93,7 @@ module web 'core/host/appservice.bicep' = {
   params: {
     name: '${prefix}-appservice'
     location: location
-    congitiveServiceName: cognitiveService.outputs.name
+    cognitiveServiceName: cognitiveService.outputs.name
     tags: union(tags, { 'azd-service-name': 'web' })
     appServicePlanId: appServicePlan.outputs.id
     runtimeName: 'python'
