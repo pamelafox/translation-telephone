@@ -33,11 +33,6 @@ param numberOfWorkers int = -1
 param scmDoBuildDuringDeployment bool = false
 param use32BitWorkerProcess bool = false
 param ftpsState string = 'FtpsOnly'
-param cognitiveServiceName string = ''
-
-resource cognitiveService 'Microsoft.CognitiveServices/accounts@2023-05-01' existing =  if (!(empty(cognitiveServiceName))) {
-  name: cognitiveServiceName
-}
 
 resource appService 'Microsoft.Web/sites@2022-03-01' = {
   name: name
@@ -71,7 +66,6 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       {
         SCM_DO_BUILD_DURING_DEPLOYMENT: string(scmDoBuildDuringDeployment)
         ENABLE_ORYX_BUILD: string(enableOryxBuild)
-        AZURE_TRANSLATE_API_KEY : (!(empty(cognitiveServiceName))) ? cognitiveService.listKeys().key1 : ''
       },
       !empty(applicationInsightsName) ? { APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString } : {},
       !empty(keyVaultName) ? { AZURE_KEY_VAULT_ENDPOINT: keyVault.properties.vaultUri } : {})

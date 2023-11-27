@@ -19,11 +19,24 @@ param postgresAdminPassword string
 var resourceToken = toLower(uniqueString(subscription().id, name, location))
 var tags = { 'azd-env-name': name }
 var prefix = '${name}-${resourceToken}'
+var rgName = '${prefix}-rg'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${prefix}-rg'
+  name: rgName
   location: location
   tags: tags
+}
+
+module cognitiveService 'core/ai/cognitiveservices.bicep' = {
+  name: 'cognitiveservice'
+  scope: resourceGroup
+  params: {
+    name: '${prefix}-cognitiveservice'
+    location: location
+    sku:  'S1'
+    kind: 'TextTranslation'
+    publicNetworkAccess: 'Enabled'
+  }
 }
 
 // Store secrets in a keyvault
@@ -39,13 +52,23 @@ module keyVault './core/security/keyvault.bicep' = {
 }
 
 module keyVaultSecret './core/security/keyvault-secret.bicep' = {
-  name: 'keyvault-secret'
+  name: 'keyvaultsecret'
   scope: resourceGroup
   params: {
+    rgName: rgName
     keyVaultName: keyVault.outputs.name
-    name: 'postgresAdminPassword'
-    secretValue: postgresAdminPassword
+    postgresAdminPassword: postgresAdminPassword
+    cognitiveServiceName: cognitiveService.outputs.name
   }
+}
+
+module webaccess './core/security/keyvault-access.bicep' = {
+  name: 'web-keyvault-access'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVault.outputs.name 
+    principalId: web.outputs.identityPrincipalId 
+  } 
 }
 
 var postgresServerName = '${prefix}-postgres'
@@ -75,25 +98,12 @@ module postgresServer 'core/database/postgresql/flexibleserver.bicep' = {
   }
 }
 
-module cognitiveService 'core/ai/cognitiveservices.bicep' = {
-  name: 'cognitiveservice'
-  scope: resourceGroup
-  params: {
-    name: '${prefix}-cognitiveservice'
-    location: location
-    sku:  'S1'
-    kind: 'TextTranslation'
-    publicNetworkAccess: 'Enabled'
-  }
-}
-
 module web 'core/host/appservice.bicep' = {
   name: 'appservice'
   scope: resourceGroup
   params: {
     name: '${prefix}-appservice'
     location: location
-    cognitiveServiceName: cognitiveService.outputs.name
     tags: union(tags, { 'azd-service-name': 'web' })
     appServicePlanId: appServicePlan.outputs.id
     runtimeName: 'python'
@@ -106,7 +116,11 @@ module web 'core/host/appservice.bicep' = {
       DBUSER: postgresServerAdmin
       DBPASS: postgresAdminPassword
       FLASK_APP: 'src'
+      AZURE_COGNITIVE_SERVICE_KEY: keyVaultSecret.outputs.COGNITIVE_SERVICE_KEY
+      AZURE_KEY_VAULT_ENDPOINT: keyVault.outputs.endpoint
+      AZURE_TRANSLATE_API_KEY: ''
     }
+    keyVaultName: keyVault.outputs.name
   }
 }
 
