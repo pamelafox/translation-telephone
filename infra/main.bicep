@@ -51,7 +51,7 @@ module keyVault './core/security/keyvault.bicep' = {
   }
 }
 
-module keyVaultSecret './core/security/keyvault-secret.bicep' = {
+module keyVaultSecret './app/security.bicep' = {
   name: 'keyvaultsecret'
   scope: resourceGroup
   params: {
