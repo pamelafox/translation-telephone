@@ -126,9 +126,7 @@ module web 'core/host/appservice.bicep' = {
       DBUSER: postgresServerAdmin
       DBPASS: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=postgresAdminPassword)'
       FLASK_APP: 'src'
-      AZURE_COGNITIVE_SERVICE_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=cognitiveServiceKey)'
-      AZURE_KEY_VAULT_ENDPOINT: keyVault.outputs.endpoint
-      AZURE_TRANSLATE_API_KEY: ''
+      AZURE_TRANSLATE_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=cognitiveServiceKey)'
     }
     keyVaultName: keyVault.outputs.name
   }
