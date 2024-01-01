@@ -51,13 +51,23 @@ module keyVault './core/security/keyvault.bicep' = {
   }
 }
 
-module keyVaultSecret './app/security.bicep' = {
-  name: 'keyvaultsecret'
+module postgreSQLDBSecret './core/security/keyvault-secret.bicep' = {
+  name: 'keyvaultsecret-postgresql'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVault.outputs.name
+    name: 'postgresAdminPassword'
+    secretValue: postgresAdminPassword
+  }
+}
+
+module cognitiveServiceSecret './app/security.bicep' = {
+  name: 'keyvaultsecret-cognitiveservice'
   scope: resourceGroup
   params: {
     rgName: rgName
     keyVaultName: keyVault.outputs.name
-    postgresAdminPassword: postgresAdminPassword
+    name: 'cognitiveServiceKey'
     cognitiveServiceName: cognitiveService.outputs.name
   }
 }
@@ -114,9 +124,9 @@ module web 'core/host/appservice.bicep' = {
       DBHOST: '${postgresServerName}.postgres.database.azure.com'
       DBNAME: postgresDatabaseName
       DBUSER: postgresServerAdmin
-      DBPASS: postgresAdminPassword
+      DBPASS: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=postgresAdminPassword)'
       FLASK_APP: 'src'
-      AZURE_COGNITIVE_SERVICE_KEY: keyVaultSecret.outputs.COGNITIVE_SERVICE_KEY
+      AZURE_COGNITIVE_SERVICE_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=cognitiveServiceKey)'
       AZURE_KEY_VAULT_ENDPOINT: keyVault.outputs.endpoint
       AZURE_TRANSLATE_API_KEY: ''
     }
@@ -141,3 +151,4 @@ module appServicePlan 'core/host/appserviceplan.bicep' = {
 
 output WEB_URI string = web.outputs.uri
 output AZURE_LOCATION string = location
+output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name

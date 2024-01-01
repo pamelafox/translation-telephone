@@ -1,8 +1,6 @@
 import os
 
 from flask import Flask
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
 
 def create_app(config=None):
     app = Flask(__name__)
@@ -12,10 +10,7 @@ def create_app(config=None):
     db_name = os.environ.get("DBNAME", "transtel")
     db_uri = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
 
-    # Get Azure Translate API Key from Azure Key Vault
-    credential = DefaultAzureCredential()
-    secret_client = SecretClient(os.environ.get("AZURE_KEY_VAULT_ENDPOINT"), credential)
-    translate_api_key = secret_client.get_secret(os.environ.get("AZURE_COGNITIVE_SERVICE_KEY")).value
+    translate_api_key = os.environ.get("AZURE_COGNITIVE_SERVICE_KEY")
     os.environ["AZURE_TRANSLATE_API_KEY"] = translate_api_key
     app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
