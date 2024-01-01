@@ -3,5 +3,3 @@ requests
 psycopg2
 Flask-SQLAlchemy
 Flask-Migrate
-azure-identity==1.15.0
-azure-keyvault-secrets==4.7.0
