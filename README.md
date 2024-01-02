@@ -72,20 +72,16 @@ To deploy your own instance, follow these steps:
 
     It will prompt you to login, pick a subscription, and provide a location (like "eastus"). Then it will provision the resources in your account and deploy the latest code. If you get an error with deployment, changing the location (like to "centralus") can help, as there may be availability constraints for some of the resources.
 
-5. When azd has finished deploying, you'll see an endpoint URI in the command output. Visit that URI and you should see the quiz! 🎉
+5. When azd has finished deploying, you'll see an endpoint URI in the command output. Visit that URI and you should see the website and be able to translate messages.
+
+6. For the website to work fully (i.e. save translations to the database), you must migrate the database. Navigate to the App Service in the Azure Portal, select SSH, and run this command once you're in the SSH terminal:
+
+```shell
+flask db upgrade
+```
 
 6. When you've made any changes to the app code, you can just run:
 
     ```shell
     azd deploy
     ```
-
-Alternatively, follow the [tutorial for Flask app + PostGreSQL deployment](https://docs.microsoft.com/azure/app-service/tutorial-python-postgresql-app) but using this app instead of the sample app.
-
-Make sure you specify the following environment variables in the App Service configuration:
-
-* `DBHOST`, `DBNAME`, `DBPASS`, `DBUSER`: The above linked tutorial shows how to set these.
-* `FLASK_APP`: Set to 'src'
-* `AZURE_TRANSLATE_API_KEY`: Get this by registering for Azure Cognitive Services.
-
-You must also migrate the database using the App Service SSH and running `flask db upgrade`.
