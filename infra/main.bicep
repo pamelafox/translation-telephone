@@ -9,25 +9,34 @@ param name string
 @description('Primary location for all resources')
 param location string
 
-@secure()
-@description('PostGreSQL Server administrator password')
-param postgresServerPassword string
-
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
+
+@secure()
+@description('PostGreSQL Server administrator password')
+param postgresAdminPassword string
 
 var resourceToken = toLower(uniqueString(subscription().id, name, location))
 var tags = { 'azd-env-name': name }
 var prefix = '${name}-${resourceToken}'
-
-var postgresServerName = '${prefix}-postgres'
-var postgresServerAdmin = 'flaskadmin'
-var postgresDatabaseName = 'transtel'
+var rgName = '${prefix}-rg'
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${prefix}-rg'
+  name: rgName
   location: location
   tags: tags
+}
+
+module cognitiveService 'core/ai/cognitiveservices.bicep' = {
+  name: 'cognitiveservice'
+  scope: resourceGroup
+  params: {
+    name: '${prefix}-cognitiveservice'
+    location: location
+    sku:  'S1'
+    kind: 'TextTranslation'
+    publicNetworkAccess: 'Enabled'
+  }
 }
 
 // Store secrets in a keyvault
@@ -42,15 +51,39 @@ module keyVault './core/security/keyvault.bicep' = {
   }
 }
 
-module keyVaultSecret './core/security/keyvault-secret.bicep' = {
-  name: 'keyvault-secret'
+module postgreSQLDBSecret './core/security/keyvault-secret.bicep' = {
+  name: 'keyvaultsecret-postgresql'
   scope: resourceGroup
   params: {
     keyVaultName: keyVault.outputs.name
-    name: 'postgresServerPassword'
-    secretValue: postgresServerPassword
+    name: 'postgresAdminPassword'
+    secretValue: postgresAdminPassword
   }
 }
+
+module cognitiveServiceSecret './app/security.bicep' = {
+  name: 'keyvaultsecret-cognitiveservice'
+  scope: resourceGroup
+  params: {
+    rgName: rgName
+    keyVaultName: keyVault.outputs.name
+    name: 'cognitiveServiceKey'
+    cognitiveServiceName: cognitiveService.outputs.name
+  }
+}
+
+module webaccess './core/security/keyvault-access.bicep' = {
+  name: 'web-keyvault-access'
+  scope: resourceGroup
+  params: {
+    keyVaultName: keyVault.outputs.name 
+    principalId: web.outputs.identityPrincipalId 
+  } 
+}
+
+var postgresServerName = '${prefix}-postgres'
+var postgresServerAdmin = 'admin${uniqueString(resourceGroup.id)}'
+var postgresDatabaseName = 'transtel'
 
 
 module postgresServer 'core/database/postgresql/flexibleserver.bicep' = {
@@ -68,8 +101,8 @@ module postgresServer 'core/database/postgresql/flexibleserver.bicep' = {
       storageSizeGB: 32
     }
     version: '13'
-    administratorLogin: 'flaskadmin'
-    administratorLoginPassword: postgresServerPassword
+    administratorLogin: postgresServerAdmin
+    administratorLoginPassword: postgresAdminPassword
     databaseNames: [postgresDatabaseName]
     allowAzureIPsFirewall: true
   }
@@ -91,9 +124,11 @@ module web 'core/host/appservice.bicep' = {
       DBHOST: '${postgresServerName}.postgres.database.azure.com'
       DBNAME: postgresDatabaseName
       DBUSER: postgresServerAdmin
-      DBPASS: postgresServerPassword
+      DBPASS: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=postgresAdminPassword)'
       FLASK_APP: 'src'
+      AZURE_TRANSLATE_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=cognitiveServiceKey)'
     }
+    keyVaultName: keyVault.outputs.name
   }
 }
 
@@ -114,3 +149,4 @@ module appServicePlan 'core/host/appserviceplan.bicep' = {
 
 output WEB_URI string = web.outputs.uri
 output AZURE_LOCATION string = location
+output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
