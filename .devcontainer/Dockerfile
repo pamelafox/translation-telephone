@@ -1,4 +1,4 @@
-ARG VARIANT=3.10
+ARG VARIANT=3.11
 FROM --platform=amd64 mcr.microsoft.com/devcontainers/python:${VARIANT}
 
 RUN curl -fsSL https://aka.ms/install-azd.sh | bash
